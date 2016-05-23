@@ -1,12 +1,7 @@
-# jf
+# 调调积分商城后台管理系统
 
-This project is generated with [yo angular generator](https://github.com/yeoman/generator-angular)
-version 0.15.1.
+build by grunt/bower/yoman/
 
-## Build & development
+use angular/angular-ui-router/jquery/bootstrap
 
-Run `grunt` for building and `grunt serve` for preview.
 
-## Testing
-
-Running `grunt test` will run the unit tests with karma.
