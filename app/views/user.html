@@ -1,0 +1,170 @@
+<!-- IRIS008 -->
+<div class="container" ng-controller="userCtrl">
+  <div class="row">
+    <!-- 左侧区 -->
+    <div class="col-md-5 left">
+      <div class="main-container">
+        <div class="form-group search-input">
+          <div class="input-group">
+            <span class="input-group-addon" ng-click="eventHandler.search()">走你</span>
+            <input type="text" class="form-control" placeholder="搜索用户ID。搜多个ID使用空格或逗号隔开啊亲" ng-model="query" ng-keyup="eventHandler.knockEnterKey($event)">
+          </div>
+        </div>
+        <div
+            data-range
+            id="pickerRange" 
+            start="datebox.start" 
+            end="datebox.end" 
+            view="date" 
+            min-view="date" 
+            max-view="date" 
+            format="YYYY-MM-DD" 
+            timezone="Asia/Hong_Kong">
+              从
+              <input
+                  style="text-align:center;"
+                  date-time
+                  ng-model="datebox.start"
+                  id="pickerMinSelector"
+                  auto-close="true"
+                  date-change="startDateChange"
+                  view="date"
+                  min-view = "date"
+                  max-view = "date"
+                  timezone="Asia/Hong_Kong"
+                  format="YYYY-MM-DD"
+                  class="ng-valid ng-scope ng-valid-max ng-dirty ng-touched">
+                  &nbsp;&nbsp;到&nbsp;&nbsp;
+                  <input
+                      style="text-align:center;"
+                      date-time
+                      ng-model="datebox.end"
+                      id="pickerMaxSelector"
+                      auto-close="true"
+                      date-change="endDateChange"
+                      view="date"
+                      min-view = "date"
+                      max-view = "date"
+                      timezone="Asia/Hong_Kong"
+                      format="YYYY-MM-DD"
+                      class="ng-valid ng-scope ng-valid-max ng-dirty ng-touched">
+          </div>
+        <!-- listView区 -->
+        <ul class="user-list">
+          <li class="user" ng-repeat="user in dataFetch.users" >
+            <!-- eventHandler.paddingRight(user)中的user参数就是$scope.dataFetch.users中的一个对象，并不会由于参数传递而产生一个新的对象，javascript中的参数传递是基于值的传递，传递的是引用值。这样写只是为了方便。在paddingRight中访问$scope.dataFetch.users，取出对应的user效果是一样的 -->
+            <a href="javascript:void(0);" data-uid="{{user.uid}}" ng-click="eventHandler.paddingRight(user)">
+              <img ng-src="{{user.auth_info[user.auth_info.platform].head_pic}}" width="100" height="100">
+              <h3 class="nick-name" ng-bind="user.auth_info[user.auth_info.platform].nick_name">这是昵称</h3>
+              <span class="uid" ng-bind="user.uid"></span>
+            </a>
+          </li>
+        </ul>
+        <!-- <ul class="user-list">
+          <li class="user">
+            <img ng-src="http://a.diaox2.com/cms/sites/default/files/20160524/firstpage/6337thumb.jpg" width="100" height="100" src="http://a.diaox2.com/cms/sites/default/files/20160524/firstpage/6337thumb.jpg">
+            <h3 class="nick-name">这是昵称</h3>
+            <span class="uid">1232</span>
+          </li>
+        </ul> -->
+      </div>
+    </div>
+    <!-- 右侧区 -->
+    <div class="col-md-7 right">
+
+      <div class="btn-area"> 
+        <button class="btn btn-default btn-primary btn-sm" role="button" ng-click="eventHandler.save(userData)"><span class="glyphicon glyphicon-ok"></span>保存</button> 
+        <button class="btn btn-warning btn-sm" role="button" ng-click="eventHandler.abandon(userData)"><span class="glyphicon glyphicon-remove"></span>放弃</button>
+      </div>
+
+      <div class="panel panel-default">
+        <div class="panel-heading">用户基本信息</div>
+        <div class="panel-body">
+           <table class="table table-hover table-bordered basic-info">
+               <thead>
+                 <tr> 
+                   <th>UID</th>
+                   <th>昵称</th>
+                   <!-- <th>头像</th> -->
+                   <th>登录平台</th>
+                   <th>是否黑名单</th>
+                   <th class="disnone">加入/移出黑名单原因</th>
+                 </tr>
+               </thead>
+               <tbody>
+                  <tr>
+                    <td>{{userData.uid}}</td>
+                    <td ng-bind="userData.auth_info[userData.auth_info.platform].nick_name"></td>
+                    <!-- <td><img ng-src="{{userData.auth_info[userData.auth_info.platform].head_pic}}" width="60" height="60"></td> -->
+                    <td ng-bind="userData.auth_info.platform"></td>
+                    <!-- <td ng-bind="userData.blacked"> -->
+                    <td>
+                      <div class="radio">
+                        <label>
+                           <!-- 0 不是黑名单用户; 1 黑名单用户 -->
+                           <input type="checkbox" ng-model="userData.isBlacked" ng-checked=" userData.blacked == 1 " id="isBlacked" ng-click="eventHandler.modifyBlack(userData)"> 黑名单
+                        </label>
+                    </div>
+                    </td>
+                    <td class="disnone">
+                      <textarea id="blacked_reason" class="form-control" rows="3"></textarea>
+                    </td>
+                  </tr>
+               </tbody>
+            </table>
+        </div>
+      </div>
+
+      <div class="panel panel-default">
+        <div class="panel-heading">用户积分信息</div>
+        <div class="panel-body">
+           <table class="table table-hover table-bordered score-info">
+             <thead>
+               <tr> 
+                 <th>积分</th>
+                 <th>签到天数</th>
+                 <th>邀请码</th>
+                 <th class="disnone">修改原因</th>
+               </tr>
+             </thead>
+             <tbody>
+                 <tr>
+                  <td>
+                    <input type="text" ng-model="userData.score" disabled id="score">
+                    <button type="button" class="btn btn-info btn-xs" ng-click="eventHandler.modifyScore(userData);">修改积分</button>
+                  </td>
+                  <td>{{userData.continuous_check}}</td>
+                  <td>{{userData.invite_str}}</td>
+                  <td class="disnone"><textarea id="reason" class="form-control" rows="3"></textarea></td>
+                </tr>
+             </tbody>
+          </table>
+        </div>
+      </div>
+
+
+     <div class="panel panel-default">
+        <div class="panel-heading">历史记录</div>
+        <div class="panel-body">
+          <table class="table table-hover table-bordered">
+             <thead>
+               <tr> 
+                 <th>兑换时间</th>
+                 <th>gid</th>
+                 <th>兑换码</th>
+               </tr>
+             </thead>
+             <tbody>
+                <tr ng-repeat="history in userData.history" ng-click="eventHandler.to(history.gid)" title="点击跳转">
+                  <td>{{history.stamp | date:"yyyy-MM-dd HH:mm:ss"}}</td>
+                  <td>{{history.gid}}</td>
+                  <td>{{history.value}}</td>
+                </tr>
+             </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

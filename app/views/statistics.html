@@ -1,0 +1,119 @@
+<div class="container statistics-container" ng-controller="statisticsCtrl">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+        <div
+            data-range
+            style="display:inline-block;"
+            id="pickerRange" 
+            start="datebox.start" 
+            end="datebox.end" 
+            view="date" 
+            min-view="date" 
+            max-view="date" 
+            format="YYYY-MM-DD" 
+            timezone="Asia/Hong_Kong">
+                <table class="date-range">
+                    <tbody>
+                        <tr>
+                            <td valign="top">
+                                从
+                                <input
+                                    style="text-align:center;"
+                                    date-time
+                                    ng-model="datebox.start"
+                                    id="pickerMinSelector"
+                                    auto-close="true"
+                                    date-change="startDateChange"
+                                    view="date"
+                                    min-view = "date"
+                                    max-view = "date"
+                                    timezone="Asia/Hong_Kong"
+                                    format="YYYY-MM-DD"
+                                    class="ng-valid ng-scope ng-valid-max ng-dirty ng-touched">
+                            </td>
+                            <td valign="top">
+                                &nbsp;&nbsp;到&nbsp;&nbsp;
+                                <input
+                                    style="text-align:center;"
+                                    date-time
+                                    ng-model="datebox.end"
+                                    id="pickerMaxSelector"
+                                    auto-close="true"
+                                    date-change="endDateChange"
+                                    view="date"
+                                    min-view = "date"
+                                    max-view = "date"
+                                    timezone="Asia/Hong_Kong"
+                                    format="YYYY-MM-DD"
+                                    class="ng-valid ng-scope ng-valid-max ng-dirty ng-touched">
+                                    之间的统计信息
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+        </div>
+        <!-- {{date}}（单位：天） -->
+        <button type="button" class="btn btn-success btn-xs pull-right" ng-click="eventHandler.refresh()"><span class="glyphicon glyphicon-refresh"></span>&nbsp;刷新</button></div>
+        <div class="panel-body">
+            <table class="table table-hover table-bordered statistics-info">
+                <thead>
+                    <tr>
+                        <th>积分增量</th>
+                        <th>积分消耗</th>
+                        <th>签到成功</th>
+                        <!-- <th>开启提醒的人（总数）</th> -->
+                        <th>开启提醒的人</th>
+                        <!-- <th>总共多少人有心动礼物</th> -->
+                        <th>多少人有心动礼物</th>
+                        <!-- <th>每天多少人设置心动礼物</th> -->
+                        <th>设置心动礼物的人数</th>
+                        <!-- <th>每天多少人更换心动礼物</th> -->
+                        <th>更换心动礼物的人数</th>
+                        <!-- <th>总注册人数</th> -->
+                        <th>注册人数</th>
+                        <th>有购买行为的人数</th>
+                        <!-- <th>商品卖出总个数</th> -->
+                        <th>商品卖出总数</th>
+                        <th>重复兑换受限人次</th>
+                        <th>邀请码成功生效次数</th>
+                        <th>受益邀请人数</th>
+                        <th>受益被邀请人数</th>
+                        <th>分享+分次数</th>
+                        <th>精华次数</th>
+                        <th>打开签到提醒的次数</th>
+                        <th>关闭签到提醒的次数</th>
+                        <th>注册次数</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="statistics in statisticsList">
+                        <td>{{statistics.gain}}</td>
+                        <td>{{statistics.lose}}</td>
+                        <td>{{statistics.checkins}}</td>
+                        <td>{{statistics.notify_on}}</td>
+                        <td>{{statistics.target_num}}</td>
+                        <td>{{statistics.target_set}}</td>
+                        <td>{{statistics.target_change}}</td>
+                        <td>{{statistics.registers}}</td>
+                        <td>{{statistics.purchases}}</td>
+                        <td>{{statistics.sales}}</td>
+                        <td>{{statistics.p_exceeds}}</td>
+                        <td>{{statistics.invite_sucs}}</td>
+                        <td>{{statistics.inviters}}</td>
+                        <td>{{statistics.invitees}}</td>
+                        <td>{{statistics.shares}}</td>
+                        <td>{{statistics.essence}}</td>
+                        <td>{{statistics.set_notify}}</td>
+                        <td>{{statistics.off_notify}}</td>
+                        <td>{{statistics.signups}}</td>
+                    </tr>
+                    <tr>
+                    <!-- <td colspan="19" style="text-align:center;" class="warning"ng-show="statisticsList.length === 0">{{datebox.start | date:"yyyy-MM-dd"}} ~ {{datebox.end | date:"yyyy-MM-dd"}}还没有数据</td> -->
+                    <td colspan="19" style="text-align:center;" class="warning"ng-show="statisticsList.length === 0">还没有数据，换个时间段试试~~</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>

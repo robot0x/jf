@@ -1,0 +1,158 @@
+$icon-font-path: "../bower_components/bootstrap-sass-official/assets/fonts/bootstrap/";
+// bower:scss
+@import "bootstrap-sass-official/assets/stylesheets/_bootstrap.scss";
+// endbower
+$commonColor:#efeff4;
+ul,li{
+  list-style:none;
+  padding:0;
+  margin:0;
+}
+h3,h4,p{
+  margin:0;
+  padding:0;
+  font-weight: normal;
+  font-size: 16px;
+}
+html{
+  height:100%;
+}
+
+body {
+  padding: 0;
+}
+.wrapper{
+  padding-top:30px;
+}
+.input-group-addon{
+  cursor: pointer;
+}
+.left,.right{
+  height: 2000px;
+  border:1px #ddd solid;
+  padding-top:30px;
+  // border-top:none;
+}
+.btn-area{
+  margin-bottom: 20px;
+  text-align: right;
+  button{
+    margin-right: 30px;
+  }
+}
+.left{
+  position: relative;
+  border-right:none;
+  // .user,.mail,.statistics{
+  //   position:absolute;
+  //   left: -53px;
+  //   top:0;
+  // }
+  .mail{
+    top:50px;
+  }
+  .statistics{
+    top:100px;
+  }
+}
+
+// loading and tips
+.loading-container{
+  position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    // background:rgba(0,0,0,.5);
+    z-index: 2;
+    display: none;
+
+}
+.loader--spinningDisc {
+    border: solid 0.5em #9b59b6;
+    border-right-color: transparent;
+    border-left-color: transparent;
+    padding: 1em;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #3498db;
+    background-clip: content-box;
+    animation: spinDisc 1.5s linear infinite;
+    position:absolute;
+    left: 50%;
+    top: 50%;
+    margin-top:-40px;
+    margin-left: -40px;
+}
+@keyframes spinDisc {
+  50% {
+    border-top-color: #3498db;
+    border-bottom-color: #3498db;
+    background-color: #2ecc71;
+  }
+  100% {
+    transform: rotate(1turn);
+  }
+}
+.tip{
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%);
+  background:rgba(0,0,0,.5);
+  z-index: 2;
+  line-height: 50px;
+  text-align: center;
+  color:#fff;
+  font-size: 18px;
+  padding:0 20px;
+}
+
+.user{
+  padding:15px 0;
+  border-bottom:2px $commonColor solid; 
+  position: relative;
+
+  a{
+    display: block;
+  }
+
+  .nick-name{
+    position:absolute;
+    left: 130px;
+    top:15px;
+  }
+
+  .uid{
+    line-height:1;
+    position:absolute;
+    left: 130px;
+    bottom:15px;
+  }
+}
+.disnone{
+  display: none;
+}
+
+.history-table tbody tr{
+  cursor: pointer;
+}
+
+.radio label{
+  margin-right: 20px;
+}
+.common{
+  padding:20px 0;
+}
+.common input{
+  margin-right: 40px;
+}
+.statistics-container{
+  padding-left:0 !important;
+  padding-right:0 !important;
+  padding-top:20px;
+}
+.statistics-info{
+  // margin-top: 30px;
+}

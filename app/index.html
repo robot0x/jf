@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <title>积分商城后台</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width">
+    <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+    <!-- build:css(.) styles/vendor.css -->
+    <!-- bower:css -->
+    <link rel="stylesheet" href="bower_components/angular-datepicker/dist/angular-datepicker.css" />
+    <!-- endbower -->
+    <!-- endbuild -->
+    <!-- build:css(.tmp) styles/main.css -->
+    <link rel="stylesheet" href="styles/main.css">
+    <!-- endbuild -->
+  </head>
+  <body ng-app="jfApp">
+   <div class="wrapper" ng-controller="mainCtrl">
+      <div class="common container">
+        
+        <div class="form-inline person-container">
+          <div class="form-group">
+            <label for="person">修改人：</label>
+            <input class="form-control" type="text" placeholder="2-8位姓名缩写.如LYN" id="person">
+          </div>
+
+          <div class="form-group">
+            <label for="code">密码：</label>
+            <input type="password" class="form-control" id="code" placeholder="请输入密码">
+          </div>
+        </div>
+
+      </div>
+      <div class="container">
+        <div class="row">
+          <ul class="nav nav-tabs nav-justified">
+                  <li role="presentation" ng-class="{'active':isActive('/user')}"><a href="#/user">用户</a></li>
+                  <li role="presentation" ng-class="{'active':isActive('/mall')}"><a href="#/mall">商城</a></li>
+                  <li role="presentation" ng-class="{'active':isActive('/statistics')}"><a href="#/statistics">统计</a></li>
+           </ul>
+        </div>
+      </div>
+     <div ng-view></div>
+     <!-- loading -->
+     <div class="loading-container"><div class="loader--spinningDisc"></div></div>
+   </div>
+    <!-- Google Analytics: change UA-XXXXX-X to be your site's ID -->
+    <!-- build:js(.) scripts/vendor.js -->
+    <!-- bower:js -->
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap.js"></script>
+    <script src="bower_components/angular-route/angular-route.js"></script>
+    <script src="bower_components/moment/moment.js"></script>
+    <script src="bower_components/moment-timezone/builds/moment-timezone-with-data-2010-2020.js"></script>
+    <script src="bower_components/angular-datepicker/dist/angular-datepicker.js"></script>
+    <!-- endbower -->
+    <!-- endbuild -->
+
+        <!-- build:js({.tmp,app}) scripts/scripts.js -->
+        <script src="scripts/app.js"></script>
+        <script src="scripts/tool.js"></script>
+        <script src="scripts/controllers/mainCtrl.js"></script>
+        <script src="scripts/controllers/userCtrl.js"></script>
+        <script src="scripts/controllers/mallCtrl.js"></script>
+        <script src="scripts/controllers/statisticsCtrl.js"></script>
+        <!-- endbuild -->
+</body>
+</html>
