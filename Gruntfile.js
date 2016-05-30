@@ -34,7 +34,6 @@ module.exports = function (grunt) {
 
     // Watches files for changes and runs tasks based on the changed files
     // watch task
-    watch: {
       // bower target
     watch: {
       bower: {
@@ -60,9 +59,9 @@ module.exports = function (grunt) {
         tasks: ['compass:server', 'postcss:server']
       },
       // gruntfile target
-      gruntfile: {
-        files: ['Gruntfile.js']
-      },
+      // gruntfile: {
+      //   files: ['Gruntfile.js']
+      // },
       // livereload target
       gruntfile: {
         files: ['Gruntfile.js']

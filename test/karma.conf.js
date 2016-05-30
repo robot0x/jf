@@ -23,18 +23,10 @@ module.exports = function(config) {
       'bower_components/jquery/dist/jquery.js',
       'bower_components/angular/angular.js',
       'bower_components/bootstrap-sass-official/assets/javascripts/bootstrap.js',
-<<<<<<< HEAD
       'bower_components/angular-route/angular-route.js',
       'bower_components/moment/moment.js',
       'bower_components/moment-timezone/builds/moment-timezone-with-data-2010-2020.js',
       'bower_components/angular-datepicker/dist/angular-datepicker.js',
-=======
-      'bower_components/angular-animate/angular-animate.js',
-      'bower_components/angular-cookies/angular-cookies.js',
-      'bower_components/angular-resource/angular-resource.js',
-      'bower_components/angular-route/angular-route.js',
-      'bower_components/angular-sanitize/angular-sanitize.js',
->>>>>>> 99fdebc54c55e5c7342f32241f4fa4dafbc39ad0
       'bower_components/angular-mocks/angular-mocks.js',
       // endbower
       'app/scripts/**/*.js',

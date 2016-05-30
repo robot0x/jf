@@ -4,16 +4,9 @@
   "dependencies": {
     "angular": "^1.4.0",
     "bootstrap-sass-official": "^3.2.0",
-<<<<<<< HEAD
     "angular-route": "^1.4.0",
-    "angular-datepicker": "https://github.com/g00fy-/angular-datepicker.git#^2.0.3"
-=======
-    "angular-animate": "^1.4.0",
-    "angular-cookies": "^1.4.0",
-    "angular-resource": "^1.4.0",
-    "angular-route": "^1.4.0",
-    "angular-sanitize": "^1.4.0"
->>>>>>> 99fdebc54c55e5c7342f32241f4fa4dafbc39ad0
+    "angular-datepicker": "https://github.com/g00fy-/angular-datepicker.git#^2.0.3",
+    "angular-route": "^1.4.0"
   },
   "devDependencies": {
     "angular-mocks": "^1.4.0"
@@ -28,11 +21,8 @@
         "dist/js/bootstrap.js"
       ]
     }
-<<<<<<< HEAD
   },
   "resolutions": {
     "angular": "1.5.5"
-=======
->>>>>>> 99fdebc54c55e5c7342f32241f4fa4dafbc39ad0
   }
 }
