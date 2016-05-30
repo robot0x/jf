@@ -2,7 +2,7 @@
 
 var jfApp = angular.module('jfApp');
 
-jfApp.controller('userCtrl',function($scope,$rootScope,$http,$q){
+jfApp.controller('userCtrl',function($scope,$rootScope,$http,$q,$filter){
 
     var headers = {"Content-Type":"application/json"};
     var prefix = "http://api.diaox2.com:3000/jf/";
@@ -12,6 +12,32 @@ jfApp.controller('userCtrl',function($scope,$rootScope,$http,$q){
     var dataFetch = {
         users:[]
     };
+
+    var dateFormater = $filter('date');
+    var pattern = "yyyyMMdd";
+    var now = new Date();
+    var datebox = $scope.datebox = {start:now,end:now};
+
+    $scope.endDateChange = $scope.startDateChange = function(){
+         var datebox = $scope.datebox;
+         var pattern = "yyyyMMdd HH:mm:ss"
+         var start = dateFormater(datebox.start,pattern);
+         var end = dateFormater(datebox.end,pattern);
+         var _d = "_d";
+         if(typeof start === "object" && _d in start){
+           start = dateFormater(start[_d],pattern);
+         }
+         if(typeof end === "object" && _d in end){
+           end = dateFormater(end[_d],pattern);
+         }
+        $scope.eventHandler.search(start,end);
+    }
+        
+
+
+
+
+
 
     $scope.dataFetch = dataFetch;
     // userCtrl下的所有事件回调都挂在eventHandler下，方便统一管理
@@ -320,8 +346,9 @@ jfApp.controller('userCtrl',function($scope,$rootScope,$http,$q){
 
            $rootScope.modifyButNotSave = false;
         },
-       
-        search:function(){
+
+
+        search:function(start,end){
              var queryStr = $scope.query;
              var rword = /[^, ，]+/g;// 以空格、中文逗号、英文逗号分割，使用replace进行foreach
              var keywords;
@@ -339,17 +366,29 @@ jfApp.controller('userCtrl',function($scope,$rootScope,$http,$q){
                 var promises = [];
                 showLoading();
 
+               
+
+                console.log(start,end);
+
                 queryStr.replace(rword,function(uid){
+
+                    var params = {
+                          'uid':uid
+                          ,'code':"IRIS008"
+                          // ,'code':"c8b89fee46428458ad670e0fda6e099b"
+                       }
+
+                    if( start && end){
+                        params.start = start;
+                        params.end = end;
+                    }
+
                     var promise = $http({
                         url:checkuser,
                         method:"POST",
                         timeout:20000,
                         catch:true,
-                        data:JSON.stringify({
-                          'uid':uid
-                          ,'code':"IRIS008"
-                          // ,'code':"c8b89fee46428458ad670e0fda6e099b"
-                       }),
+                        data:JSON.stringify(params),
                        headers:headers
                     }).then(function(result){
                         var upperData = result.data;

@@ -12,6 +12,7 @@
         </div>
         <div
             data-range
+            style="display:inline-block;margin:20px 0;"
             id="pickerRange" 
             start="datebox.start" 
             end="datebox.end" 
@@ -20,35 +21,45 @@
             max-view="date" 
             format="YYYY-MM-DD" 
             timezone="Asia/Hong_Kong">
-              从
-              <input
-                  style="text-align:center;"
-                  date-time
-                  ng-model="datebox.start"
-                  id="pickerMinSelector"
-                  auto-close="true"
-                  date-change="startDateChange"
-                  view="date"
-                  min-view = "date"
-                  max-view = "date"
-                  timezone="Asia/Hong_Kong"
-                  format="YYYY-MM-DD"
-                  class="ng-valid ng-scope ng-valid-max ng-dirty ng-touched">
-                  &nbsp;&nbsp;到&nbsp;&nbsp;
-                  <input
-                      style="text-align:center;"
-                      date-time
-                      ng-model="datebox.end"
-                      id="pickerMaxSelector"
-                      auto-close="true"
-                      date-change="endDateChange"
-                      view="date"
-                      min-view = "date"
-                      max-view = "date"
-                      timezone="Asia/Hong_Kong"
-                      format="YYYY-MM-DD"
-                      class="ng-valid ng-scope ng-valid-max ng-dirty ng-touched">
-          </div>
+                <table class="date-range">
+                    <tbody>
+                        <tr>
+                            <td valign="top">
+                                从
+                                <input
+                                    style="text-align:center;"
+                                    date-time
+                                    ng-model="datebox.start"
+                                    id="pickerMinSelector"
+                                    auto-close="true"
+                                    date-change="startDateChange"
+                                    view="date"
+                                    min-view = "date"
+                                    max-view = "date"
+                                    timezone="Asia/Hong_Kong"
+                                    format="YYYY-MM-DD"
+                                    class="ng-valid ng-scope ng-valid-max ng-dirty ng-touched">
+                            </td>
+                            <td valign="top">
+                                &nbsp;&nbsp;到&nbsp;&nbsp;
+                                <input
+                                    style="text-align:center;"
+                                    date-time
+                                    ng-model="datebox.end"
+                                    id="pickerMaxSelector"
+                                    auto-close="true"
+                                    date-change="endDateChange"
+                                    view="date"
+                                    min-view = "date"
+                                    max-view = "date"
+                                    timezone="Asia/Hong_Kong"
+                                    format="YYYY-MM-DD"
+                                    class="ng-valid ng-scope ng-valid-max ng-dirty ng-touched">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+        </div>
         <!-- listView区 -->
         <ul class="user-list">
           <li class="user" ng-repeat="user in dataFetch.users" >

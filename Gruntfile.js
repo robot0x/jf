@@ -20,10 +20,7 @@ module.exports = function (grunt) {
   });
 
   // Configurable paths for the application
-<<<<<<< HEAD
   // 在 bower.json 中的appPath中已经配置好了。路径是 app
-=======
->>>>>>> 99fdebc54c55e5c7342f32241f4fa4dafbc39ad0
   var appConfig = {
     app: require('./bower.json').appPath || 'app',
     dist: 'dist'
@@ -36,21 +33,15 @@ module.exports = function (grunt) {
     yeoman: appConfig,
 
     // Watches files for changes and runs tasks based on the changed files
-<<<<<<< HEAD
     // watch task
     watch: {
       // bower target
-=======
     watch: {
->>>>>>> 99fdebc54c55e5c7342f32241f4fa4dafbc39ad0
       bower: {
         files: ['bower.json'],
         tasks: ['wiredep']
       },
-<<<<<<< HEAD
       // js target
-=======
->>>>>>> 99fdebc54c55e5c7342f32241f4fa4dafbc39ad0
       js: {
         files: ['<%= yeoman.app %>/scripts/{,*/}*.js'],
         tasks: ['newer:jshint:all', 'newer:jscs:all'],
@@ -58,33 +49,24 @@ module.exports = function (grunt) {
           livereload: '<%= connect.options.livereload %>'
         }
       },
-<<<<<<< HEAD
       // jsTest target
-=======
->>>>>>> 99fdebc54c55e5c7342f32241f4fa4dafbc39ad0
       jsTest: {
         files: ['test/spec/{,*/}*.js'],
         tasks: ['newer:jshint:test', 'newer:jscs:test', 'karma']
       },
-<<<<<<< HEAD
       // compass target
-=======
->>>>>>> 99fdebc54c55e5c7342f32241f4fa4dafbc39ad0
       compass: {
         files: ['<%= yeoman.app %>/styles/{,*/}*.{scss,sass}'],
         tasks: ['compass:server', 'postcss:server']
       },
-<<<<<<< HEAD
       // gruntfile target
       gruntfile: {
         files: ['Gruntfile.js']
       },
       // livereload target
-=======
       gruntfile: {
         files: ['Gruntfile.js']
       },
->>>>>>> 99fdebc54c55e5c7342f32241f4fa4dafbc39ad0
       livereload: {
         options: {
           livereload: '<%= connect.options.livereload %>'

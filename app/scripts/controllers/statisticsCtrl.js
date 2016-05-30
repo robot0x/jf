@@ -19,16 +19,12 @@ jfApp.controller('statisticsCtrl', function($scope, $http,$filter) {
         refresh:function(){
               $scope.statisticsList = null;
               var datebox = $scope.datebox;
-
               var start = dateFormater(datebox.start,pattern);
               var end = dateFormater(datebox.end,pattern);
-
               var _d = "_d";
-
               if(typeof start === "object" && _d in start){
                 start = dateFormater(start[_d],pattern);
               }
-
               if(typeof end === "object" && _d in end){
                 end = dateFormater(end[_d],pattern);
               }
