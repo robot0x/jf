@@ -8,11 +8,14 @@ ul,li{
   padding:0;
   margin:0;
 }
-h3,h4,p{
+h2,h3,h4,p{
   margin:0;
   padding:0;
   font-weight: normal;
   font-size: 16px;
+}
+textarea{
+  resize: none;
 }
 html{
   height:100%;
@@ -23,9 +26,10 @@ html{
   color: #000;
   padding: 0.2em 0;
 }
-
 body {
   padding: 0;
+  font: 16px/1.5 "Hiragino Sans GB","Helvetica Neue",Helvetica,"Microsoft Yahei",heiti,Arial,sans-serif;
+  color: #14191e;
 }
 .wrapper{
   padding-top:30px;
@@ -34,7 +38,8 @@ body {
   cursor: pointer;
 }
 .left,.right{
-  height: 2000px;
+  min-height: 1000px;
+  height: 100%;
   border:1px #ddd solid;
   padding-top:30px;
   // border-top:none;
@@ -154,4 +159,44 @@ body {
   padding-left:0 !important;
   padding-right:0 !important;
   padding-top:20px;
+  border-top:1px #ddd solid;
+}
+.mall-container{
+  border:1px #ddd solid;
+  // height: 2000px;
+  min-height: 100%;
+  padding-top: 30px;
+}
+.btn-gift{
+  margin-right: 20px;
+}
+.gift-item-container{
+  padding: 20px 0;
+  border-bottom: 2px #efeff4 solid;
+  position:relative;
+}
+.view{
+  position:absolute;
+  right: 0;
+  top:20px;
+}
+.gift-item h2 a{
+ font-size:14px;
+}
+.gift-item img{
+  margin-right:20px;
+}
+.detail{
+  position:absolute;
+  left: 120px;
+  top: 20px;
+}
+.gift-item h2{
+  margin: 16px 0;
+}
+.intro{
+  font-size: 14px;
+}
+.gift-table tr td:first-child,.coupon-table tr td:first-child{
+   width: 23%;
 }

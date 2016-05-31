@@ -26,19 +26,16 @@
     "grunt-svgmin": "^2.0.0",
     "grunt-usemin": "^3.0.0",
     "grunt-wiredep": "^2.0.0",
-<<<<<<< HEAD
     "jasmine-core": "^2.4.1",
     "jit-grunt": "^0.9.1",
     "jshint-stylish": "^1.0.0",
     "karma": "^0.13.22",
     "karma-chrome-launcher": "^1.0.1",
     "karma-jasmine": "^1.0.2",
-    "time-grunt": "^1.0.0"
-=======
+    "time-grunt": "^1.0.0",
     "jit-grunt": "^0.9.1",
     "time-grunt": "^1.0.0",
     "jshint-stylish": "^1.0.0"
->>>>>>> 99fdebc54c55e5c7342f32241f4fa4dafbc39ad0
   },
   "engines": {
     "node": ">=0.10.0"

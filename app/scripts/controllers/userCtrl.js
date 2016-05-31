@@ -30,6 +30,8 @@ jfApp.controller('userCtrl',function($scope,$rootScope,$http,$q,$filter){
          if(typeof end === "object" && _d in end){
            end = dateFormater(end[_d],pattern);
          }
+         // var start = datebox.start.format(pattern);
+         // var end = datebox.end.format(pattern);
         $scope.eventHandler.search(start,end);
     }
         
@@ -356,7 +358,7 @@ jfApp.controller('userCtrl',function($scope,$rootScope,$http,$q,$filter){
              if(!queryStr){
                 queryStr = "497 55 88 72801";
              }
-
+             // TODO:查询是否输入了code，否则提示用户，且不准进行任何操作
              if(queryStr){
                 queryStr = queryStr.trim();
                 // 先清空左侧数据
@@ -365,16 +367,18 @@ jfApp.controller('userCtrl',function($scope,$rootScope,$http,$q,$filter){
                 var deffered = $q.defer();
                 var promises = [];
                 showLoading();
-
-               
-
                 console.log(start,end);
-
+                var code =  $('#code').val() || window.sessionStorage.getItem('code');
+                if(!code){
+                    hideLoading();
+                    tip("请输入密码");
+                    return;
+                }
                 queryStr.replace(rword,function(uid){
 
                     var params = {
                           'uid':uid
-                          ,'code':"IRIS008"
+                          ,'code':code
                           // ,'code':"c8b89fee46428458ad670e0fda6e099b"
                        }
 

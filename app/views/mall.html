@@ -1,6 +1,8 @@
-<div class="container" ng-controller="mallCtrl">
-    <div class="row">
-        <div class="col-md-5 left"></div>
-        <div class="col-md-7 right"></div>
+<!-- <div class="container mall-container" ng-controller="mallCtrl"> -->
+<div class="container mall-container" style="padding-left:0;padding-right:0;">
+    <div class="menu-area" style="padding-left:20px;margin-bottom:20px;">
+        <button ui-sref="mall.gift" type="button" ui-sref-active="btn-primary" class="btn btn-default btn-gift">商品</button>
+        <button ui-sref="mall.coupon" type="button" ui-sref-active="btn-primary" class="btn btn-default btn-coupon">优惠券</button>
     </div>
+    <div ui-view></div>
 </div>

@@ -16,7 +16,8 @@
     <!-- endbuild -->
   </head>
   <body ng-app="jfApp">
-   <div class="wrapper" ng-controller="mainCtrl">
+   <!-- <div class="wrapper" ng-controller="mainCtrl"> -->
+   <div class="wrapper">
       <div class="common container">
         
         <div class="form-inline person-container">
@@ -35,13 +36,22 @@
       <div class="container">
         <div class="row">
           <ul class="nav nav-tabs nav-justified">
-                  <li role="presentation" ng-class="{'active':isActive('/user')}"><a href="#/user">用户</a></li>
+                 <!--  <li role="presentation" ng-class="{'active':isActive('/user')}"><a href="#/user">用户</a></li>
                   <li role="presentation" ng-class="{'active':isActive('/mall')}"><a href="#/mall">商城</a></li>
-                  <li role="presentation" ng-class="{'active':isActive('/statistics')}"><a href="#/statistics">统计</a></li>
+                  <li role="presentation" ng-class="{'active':isActive('/statistics')}"><a href="#/statistics">统计</a></li> -->
+
+                 <!--  <li role="presentation" ng-class="{'active':isActive('/user')}"><a ui-sref="user">用户</a></li>
+                  <li role="presentation" ng-class="{'active':isActive('/mall')}"><a  ui-sref="mall">商城</a></li>
+                  <li role="presentation" ng-class="{'active':isActive('/statistics')}"><a ui-sref="statistics">统计</a></li> -->
+
+                  <li role="presentation" ui-sref-active="active"><a ui-sref="user">用户</a></li>
+                  <li role="presentation" ui-sref-active="active"><a  ui-sref="mall">商城</a></li>
+                  <li role="presentation" ui-sref-active="active"><a ui-sref="statistics">统计</a></li>
            </ul>
         </div>
       </div>
-     <div ng-view></div>
+     <!-- <div ng-view></div> -->
+     <div ui-view></div>
      <!-- loading -->
      <div class="loading-container"><div class="loader--spinningDisc"></div></div>
    </div>
@@ -54,15 +64,18 @@
     <script src="bower_components/moment/moment.js"></script>
     <script src="bower_components/moment-timezone/builds/moment-timezone-with-data-2010-2020.js"></script>
     <script src="bower_components/angular-datepicker/dist/angular-datepicker.js"></script>
+    <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
 
         <!-- build:js({.tmp,app}) scripts/scripts.js -->
         <script src="scripts/app.js"></script>
         <script src="scripts/tool.js"></script>
-        <script src="scripts/controllers/mainCtrl.js"></script>
+        <!-- <script src="scripts/controllers/mainCtrl.js"></script> -->
         <script src="scripts/controllers/userCtrl.js"></script>
-        <script src="scripts/controllers/mallCtrl.js"></script>
+        <!-- <script src="scripts/controllers/mallCtrl.js"></script> -->
+        <script src="scripts/controllers/mallGiftCtrl.js"></script>
+        <script src="scripts/controllers/mallCouponCtrl.js"></script>
         <script src="scripts/controllers/statisticsCtrl.js"></script>
         <!-- endbuild -->
 </body>

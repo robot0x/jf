@@ -1,0 +1,228 @@
+<div class="container" ng-controller="mallGiftCtrl">
+
+    <div class="row">
+        <div class="col-md-5 left" style="border-left:none;">
+            <p>共有{{ gifts.length}}个商品</p>
+            <ul class="gifts">
+                <!-- <li ng-repeat="gift in gifts"></li> -->
+                <li class="gift-item-container" ng-repeat="gift in gifts">
+                   <div class="gift-item clearfix">
+                           <img ng-src="{{gift.cover}}" width="100" height="100">
+                           <h2>
+                               <a target="_blank" href="{{gift.href}}" ng-bind="gift.title"></a>
+                           </h2>
+                           <div class="detail">
+                               <!-- 价格 -->
+                               <span>GID：{{gift.gid}}</span>
+                               <br>
+                               <!-- GID -->
+                               <span>价格：{{gift.price}}</span>
+                               <br>
+                               <!-- 来源 -->
+                               <span>来源：{{gift.ec}}</span>
+                           </div>
+                           <button class="btn btn-info view" ng-click="eventHandler.view(gift)">查看</button>
+                   </div>
+                   <p class="intro" ng-bind="gift.intro"></p>
+                </li>
+                <!-- <li class="gift-item-container">
+                   <div class="gift-item clearfix">
+                           <img class="pull-left" src="http://content.image.alimmdn.com/feedusev3/1463837541.jpg" width="100" height="100">
+                           <h2 class="pull-left">
+                               <a target="_blank" href="http://z.diaox2.com/view/app/?m=jfitem&gid=1">
+                                   限量款英国米字旗礼盒装，内含黑色星星款及磨砂银款TT便携发梳各一把。
+                               </a>
+                           </h2>
+                           <span>GID：1</span>
+                           <br>
+                           <span>价格：5000</span>
+                           <br>
+                           <span>来源：淘宝</span>
+                           <button class="btn btn-info view" ng-click="eventHandler.view(gift)">查看</button>
+                   </div>
+                   <p class="intro">
+                       "Tangle Teeze家的天使梳凭借着它既好用又便携的两大超级优势火遍了大江南北，这股浪潮依然没有褪去。这次我们带来了这款小巧TT梳，它光鲜亮丽的颜色也很容易让你在众多杂物中一眼找到。而且深深的教会了其他梳子品牌什么才叫“一梳到底”。买了的小伙伴要不要再加一个颜色？什么？你还没入手？快来换一个吧。"
+                   </p>
+                </li> -->
+            </ul>
+        </div>
+
+        <div class="col-md-7 right" style="border-right:none;">
+            
+            <div class="btn-area  pull-right">
+                <button class="btn btn-default btn-success btn-sm" role="button" ng-click="eventHandler.save(giftData)">
+                    <span class="glyphicon glyphicon-ok"></span>
+                    保存
+                </button>
+                <button class="btn btn-warning btn-sm" role="button" ng-click="eventHandler.abandon(giftData)">
+                    <span class="glyphicon glyphicon-remove"></span>
+                    清除
+                </button>
+            </div>
+
+            <table class="table table-bordered gift-table">
+               <tbody>
+                 <tr>
+                   <td>礼物名称/标题：</td>
+                   <td><textarea class="form-control" rows="3" placeholder="20字以内" ng-model="giftData.title"></textarea></td>
+                 </tr>
+
+                 <tr>
+                   <td>状态：</td>
+                   <td>
+                   <label class="radio-inline">
+                      <input type="radio" name="upAndDown" ng-model="giftData.status" id="down" value="0"> 下架
+                    </label>
+
+                     <label class="radio-inline">
+                      <input type="radio" name="upAndDown" ng-model="giftData.status" id="up" value="1"> 上架
+                    </label>
+                    
+                    <label class="radio-inline">
+                      <input type="radio" name="upAndDown" ng-model="giftData.status" id="limit" value="2"> 限量
+                    </label>
+                    <label class="radio-inline">
+                      <input type="radio" name="upAndDown" ng-model="giftData.status" id="latest" value="3"> 最新
+                    </label>
+                   </td>
+                 </tr>
+
+                 <!-- <tr ng-hide="!giftData.pics || giftData.pics.length == 0"> -->
+                 <tr style="background-color: #f5f5f5;">
+                   <td>礼品图片：
+                   </td>
+                   <td>
+                     <a target="_blank" ng-repeat="pic in giftData.pics" href="{{pic.url}}">
+                       <img ng-src="{{pic.url}}" width="60" height="60">
+                     </a>
+                   </td>
+                 </tr>
+
+                 <tr style="background-color: #f5f5f5;">
+                   <td>礼品图片上传：
+                   </td>
+                   <td>
+                     <form action="http://120.27.45.36/uplocal_multi.php" target="upload" method="post" enctype="multipart/form-data">
+                        <input id="pics" type="file" accept="image/*" name="foobar[]" multiple class="pull-left"/>
+                        <button type="submit" value="上传" class="pull-left" ng-click="eventHandler.upload($event,'pics',true)">
+                          <span class="glyphicon glyphicon-cloud-upload"></span>
+                          上传
+                        </button>
+                    </form>
+                    <iframe name="upload" style="display:none"></iframe>
+                   </td>
+                 </tr>
+
+                 <tr style="background-color: #f5f5f5;">
+                   <td>缩略图：
+                   </td>
+                   <td>
+                     <a target="_blank" href="{{giftData.thumb}}">
+                       <img id="thumbImg" ng-src="{{giftData.thumb}}" width="60" height="60">
+                     </a>
+                   </td>
+                 </tr>
+
+                <tr style="background-color: #f5f5f5;">
+                   <td>缩略图上传：
+                   </td>
+                   <td>
+                     <form action="http://120.27.45.36/uplocal_multi.php" target="upload" method="post" enctype="multipart/form-data">
+                        <input id="thumb" type="file" accept="image/*" name="foobar[]" class="pull-left"/>
+                        <button type="submit" value="上传" class="pull-left" ng-click="eventHandler.upload($event,'thumb',false)">
+                          <span class="glyphicon glyphicon-cloud-upload"></span>
+                          上传
+                        </button>
+                    </form>
+                   </td>
+                 </tr>
+                 
+                  <tr style="background-color: #f5f5f5;">
+                   <td>cover图：
+                   </td>
+                   <td>
+                     <a target="_blank" href="{{giftData.cover}}">
+                       <img id="coverImg" ng-src="{{giftData.cover}}" width="60" height="60">
+                     </a>
+                   </td>
+                 </tr>
+
+                <tr style="background-color: #f5f5f5;">
+                   <td>cover图上传：
+                   </td>
+                   <td>
+                     <form action="http://120.27.45.36/uplocal_multi.php" target="upload" method="post" enctype="multipart/form-data">
+                        <input id="cover" type="file" name="foobar[]" accept="image/*"
+                         class="pull-left"/>
+                        <button type="submit" value="上传" class="pull-left" ng-click="eventHandler.upload($event,'cover',false)">
+                          <span class="glyphicon glyphicon-cloud-upload"></span>
+                          上传
+                        </button>
+                    </form>
+                   </td>
+                 </tr>
+
+                 <tr>
+                   <td>兑换所需积分：</td>
+                   <td><input type="text" ng-model="giftData.price"></td>
+                 </tr>
+
+                <tr>
+                   <td>库存总量：</td>
+                   <td><input type="text" ng-model="giftData.stocknum"></td>
+                 </tr>
+                
+                  <tr>
+                   <td>当前库存数量：</td>
+                   <td><input type="text" ng-model="giftData.quantity"></td>
+                 </tr>
+                
+                 <tr>
+                   <td>有效期选择：</td>
+                   <td>
+                   <!-- <input type="text" ng-model="giftData.last_valid_time"> -->
+                    <input
+                                    date-time
+                                    ng-model="giftData.last_valid_time"
+                                    id="pickerMinSelector"
+                                    auto-close="true"
+                                    date-change="startDateChange"
+                                    timezone="Asia/Hong_Kong"
+                                    format="YYYY-MM-DD HH:mm:ss"
+                                    class="ng-valid ng-scope ng-valid-max ng-dirty ng-touched">
+                   </td>
+                 </tr>
+                <tr>
+                   <td>礼品描述：</td>
+                   <td><textarea class="form-control" rows="5" placeholder="字数限制在150字以内" ng-model="giftData.intro"></textarea></td>
+                 </tr>
+
+                 <tr>
+                   <td>注意事项：</td>
+                   <td><textarea class="form-control" rows="5" placeholder="字数限制在150字以内" ng-model="giftData.desc"></textarea></td>
+                 </tr>
+
+                <tr>
+                   <td>人均可兑换数量：</td>
+                   <td><input type="text" ng-model="giftData.limited"></td>
+                 </tr>
+                
+                <tr>
+                   <td>兑换流程：</td>
+                   <td><textarea class="form-control" rows="5" placeholder="N字以内" ng-model="giftData.usage"></textarea></td>
+                 </tr>
+
+                 <tr>
+                   <td>url链接：</td>
+                   <td><textarea class="form-control" rows="3" placeholder="N字以内" ng-model="giftData.target"></textarea></td>
+                 </tr>
+                <tr>
+                   <td>修改原因：</td>
+                   <td><textarea class="form-control" rows="3" ng-model="giftData.reason"></textarea></td>
+                 </tr>
+               </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
