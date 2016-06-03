@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>测试script加载顺序</title>
+<script type="text/javascript">
+(function(){
+    var script = document.createElement('script');
+    // script.async = false;
+    script.defer = true;
+    script.src = "config.js";
+    document.head.insertBefore(script,document.head.firstChild);
+    script.onload = function(){
+        window.configReady = true;
+        console.log('config.js done');
+    }
+})();
+</script>
+<script type="text/javascript" defer>
+    (function(){
+        function checkConfig(callback){
+            var timer = setInterval(function(){
+                if(window.configReady){
+                    clearInterval(timer);
+                    var config = window.config;
+                    if(callback && typeof callback){
+                        callback(config);
+                    }
+                }
+            },30);
+        }
+      checkConfig(function(config){
+         console.log(config);
+      })
+    })();
+</script>
+</head>
+<body>
+    
+</body>
+</html>
