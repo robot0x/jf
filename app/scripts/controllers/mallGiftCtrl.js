@@ -1,5 +1,36 @@
 var jfApp = angular.module('jfApp');
 
+jfApp.directive('scrollWith', function() {
+  return {
+    restrict: 'A',
+    link: function(scope, elem) {
+      var scroller = $(elem);
+      var top = scroller.offset().top;
+      var left = scroller.offset().left;
+      var width = scroller.outerWidth();
+      scroller.height($("html").height() - parseInt(scroller.css("paddingTop")));
+      $(window).on('scroll',function(){
+        var scrollTop = $(this).scrollTop();
+        if(scrollTop >= top){
+          scroller.css({
+            position:"fixed",
+            left:left,
+            top:0,
+            width:width,
+            overflow:"auto"
+          })
+        }else{
+          scroller.scrollTop(0);
+          scroller.css({
+            position:"static",
+            overflow:"hidden"
+          })
+        }
+      })
+    }
+  }
+});
+
 jfApp.controller('mallGiftCtrl',function($scope,$http,$q,$rootScope,$filter){
     var headers = {"Content-Type": "application/json"};
     var prefix = "http://api.diaox2.com:3000/jf/";
@@ -474,7 +505,8 @@ jfApp.controller('mallGiftCtrl',function($scope,$http,$q,$rootScope,$filter){
     };
 
     $scope.eventHandler = eventHandler;
-    $http(params).then(function(result){
+    if(code.value){
+      $http(params).then(function(result){
       var upperData = result.data;
       console.log(result);
 
@@ -485,7 +517,8 @@ jfApp.controller('mallGiftCtrl',function($scope,$http,$q,$rootScope,$filter){
         $scope.gifts = data.filter(function(each){
                         return each.type == 0;
                       }).map(function(each){
-                        each.href = "http://z.diaox2.com/view/app/?m=jfitem&gid="+each.gid;
+                        // each.href = "http://z.diaox2.com/view/app/?m=jfitem&gid="+each.gid;
+                        each.href = "http://c.diaox2.com/view/app/?m=jfitem&gid="+each.gid;
                         // pic字段是一个
                         each.pics = JSON.parse(each.pics);
                         return each;
@@ -501,4 +534,8 @@ jfApp.controller('mallGiftCtrl',function($scope,$http,$q,$rootScope,$filter){
         console.log('获取所有商品失败');
         console.log(e);
     })
+    }else{
+      tip('请输入密码');
+    }
+    
 });

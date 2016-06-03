@@ -19,8 +19,8 @@
    <!-- <div class="wrapper" ng-controller="mainCtrl"> -->
    <div class="wrapper">
       <div class="common container">
-        
         <div class="form-inline person-container">
+
           <div class="form-group">
             <label for="person">修改人：</label>
             <input class="form-control" type="text" placeholder="2-8位姓名缩写.如LYN" id="person">
@@ -28,8 +28,25 @@
 
           <div class="form-group">
             <label for="code">密码：</label>
-            <input type="password" class="form-control" id="code" placeholder="请输入密码">
+            <!-- <input type="password" class="form-control" id="code" placeholder="请输入密码" value="IRIS008"> -->
+            <input type="password" class="form-control" id="code" placeholder="请输入密码" value="">
           </div>
+
+          <form action="http://203.195.181.227/cdn/refresh" method="POST" target="_blank" style="display:inline-block;margin-right:20px;">
+            <input type="hidden" name="refresh" value="http://c.diaox2.com/view/app/?m=jfmall&from=center">
+            <button class="btn btn-xs btn-danger">
+              <span class="glyphicon glyphicon-refresh"></span>刷新CDN1
+            </button>
+          </form>
+
+          <form action="http://203.195.181.227/cdn/refresh" method="POST" target="_blank" style="display:inline-block;">
+            <input type="hidden" name="refresh" value="http://c.diaox2.com/view/app/?m=jfmall">
+            <button class="btn btn-xs btn-danger">
+              <span class="glyphicon glyphicon-refresh"></span>刷新CDN2
+            </button>
+          </form>
+
+
         </div>
 
       </div>
@@ -71,6 +88,7 @@
         <!-- build:js({.tmp,app}) scripts/scripts.js -->
         <script src="scripts/app.js"></script>
         <script src="scripts/tool.js"></script>
+        <script src="scripts/filters/filter.js"></script>
         <!-- <script src="scripts/controllers/mainCtrl.js"></script> -->
         <script src="scripts/controllers/userCtrl.js"></script>
         <!-- <script src="scripts/controllers/mallCtrl.js"></script> -->

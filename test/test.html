@@ -3,11 +3,67 @@
 <head>
 <meta charset="UTF-8">
 <title>测试网页</title>
+<style>
+*{
+    margin:0;
+    padding:0;
+}
+html,body{
+    height: 100%;
+}
+.loading{
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: rgba(0,0,0,.7);
+}
+.loading:before{
+    content:"";
+    height: 50px;
+    width: 50px;
+    border:3px #fff solid;
+    border-right-color:#e60012; 
+    position: fixed;
+    z-index: 1;
+    left: 50%;
+    top: 50%;
+    transform:translate(-50%,-50%);
+    border-radius: 50%;
+    animation:loading .7s linear infinite;
+}
+@keyframes loading{
+    0%{
+        transform: rotate(0);
+    }
+    100%{
+        transform: rotate(359deg);
+    }
+}
+</style>
 </head>
 <body>
 
-<div>hello , world world</div>
 
+<div id="wrapper">
+<a href="http://www.diaox2.com" target="_self" class="pre-loading">去调调</a>
+</div>
+
+<script>
+    document.addEventListener("click",function(e){
+
+        var target = e.target;
+        if(target.className.indexOf("pre-loading")!==-1){
+            console.log('show loading');
+            var div = document.createElement('div');
+            div.className = "loading";
+            document.body.appendChild(div);
+            // e.preventDefault();
+        }
+
+    },false)
+</script>
     
 </body>
 </html>

@@ -16,7 +16,8 @@ var ifApp = angular.module('jfApp', [
     // 'ngSanitize',
     'ui.router',
     // 'ui.bootstrap',
-    'datePicker'
+    'datePicker',
+    'jfAppFilters'
   ]);
 
 ifApp.config(function($stateProvider, $urlRouterProvider) {

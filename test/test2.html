@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>toggle</title>
+    <script type="text/javascript">
+        window.onload = function(){
+            var x,y,speed,ar1,y1,s,yh,timer,animationRunning=false;
+            x = document.getElementById('bt');
+            y = document.getElementById('co');
+
+            s = function(ar1,y1,yh){
+                if(animationRunning){
+                   return;
+                }
+                var target=((ar1===-1)?0:yh);
+                timer = setInterval(function(){
+                    animationRunning=true;
+                    if(y1.offsetHeight<5){
+                        speed= Math.ceil((target-5)/5);
+                    }else{
+                        speed = Math.ceil((target-y1.offsetHeight)/5);
+                    }
+                    if(y1.offsetHeight===target){
+                        animationRunning=false;
+                        clearInterval(timer);
+                        return;
+                    }
+                    y1.style.height = y1.offsetHeight + speed + "px";
+
+                },20)
+            };
+            x.onclick = function(){
+                if(y.offsetHeight===0){
+                    s(1,y,400);
+                }else{
+                    s(-1,y,400)
+                }
+            }
+        }
+
+
+        function test(e,number){
+            console.log(number);
+        }
+    </script>
+</head>
+<body>
+<button type="button" id="bt">Event</button>
+<div id="co" style="background-color:red;width:200px;height:0;">
+</div>
+<input name="sdf" onkeyup="return test(this,value);"/>
+</body>
+</html>

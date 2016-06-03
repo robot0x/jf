@@ -1,25 +1,55 @@
 var jfApp = angular.module('jfApp');
 
+jfApp.directive('scrollWith', function() {
+  return {
+    restrict: 'A',
+    link: function(scope, elem) {
+      var scroller = $(elem);
+      var top = scroller.offset().top;
+      var left = scroller.offset().left;
+      var width = scroller.outerWidth();
+      scroller.height($("html").height() - parseInt(scroller.css("paddingTop")));
+      $(window).on('scroll',function(){
+        var scrollTop = $(this).scrollTop();
+        if(scrollTop >= top){
+          scroller.css({
+            position:"fixed",
+            left:left,
+            top:0,
+            width:width,
+            overflow:"auto"
+          })
+        }else{
+          scroller.css({
+            position:"static",
+            overflow:"hidden"
+          })
+        }
+      })
+    }
+  }
+});
+
 jfApp.controller('mallCouponCtrl',function($scope,$http,$q,$rootScope,$filter){
-    var headers = {"Content-Type": "application/json"};
-    var prefix = "http://api.diaox2.com:3000/jf/";
-    var mall = prefix + "mall";
-    var addone = prefix + "addone";
-    var modone = prefix + "modone";
-    var checkgoods = prefix + "checkgoods";
-    var pattern = "yyyy-MM-dd HH:mm:ss"
+    var headers      = {"Content-Type": "application/json"};
+    var prefix       = "http://api.diaox2.com:3000/jf/";
+    var mall         = prefix + "mall";
+    var addone       = prefix + "addone";
+    var modone       = prefix + "modone";
+    var checkgoods   = prefix + "checkgoods";
+    var pattern      = "yyyy-MM-dd HH:mm:ss"
     var dateFormater = $filter('date');
-    var params = {
-            url: mall,
-            method: "POST",
-            timeout: 20000,
-            catch: true,
-            headers: headers,
-            // data:"{}"
-            data:'{"all":""}'
-        };
+    var params       = {
+                          url: mall,
+                          method: "POST",
+                          timeout: 20000,
+                          catch: true,
+                          headers: headers,
+                          // data:"{}"
+                          data:'{"all":""}'
+                      };
      function local_multi(result,id,isMulti){
-      var failArray = [];
+      var failArray    = [];
       var successArray = [];
       console.log("上传本地图成功：",result);
       if(result.state === "SUCCESS"){
@@ -104,8 +134,16 @@ jfApp.controller('mallCouponCtrl',function($scope,$http,$q,$rootScope,$filter){
             // 有效期选择
             var last_valid_time = couponData.last_valid_time;
             if(typeof last_valid_time === "object"){
-              last_valid_time = last_valid_time.format("YYYY-MM-DD HH:mm:ss");
+              couponData.last_valid_time = couponData.last_valid_time.format("YYYY-MM-DD HH:mm:ss");
+              console.log('typeof last_valid_time === "object" start');
+              console.log(couponData.last_valid_time);
+              console.log('typeof last_valid_time === "object" end');
+            }else{
+              console.log('else typeof last_valid_time === "object" start');
+              console.log(last_valid_time);
+              console.log('else typeof last_valid_time === "object" end');
             }
+            console.log('out typeof last_valid_time === "object"');
             console.log(last_valid_time);
             // 优惠券描述
             var intro = (couponData.intro || "").trim();
@@ -120,27 +158,36 @@ jfApp.controller('mallCouponCtrl',function($scope,$http,$q,$rootScope,$filter){
             // 修改原因
             var reason = (couponData.reason || "").trim();
             // 优惠码
-            var coupons = (couponData.coupons || "").trim();
+            var coupons = couponData.coupons;
 
             if(!coupons){
               tip("优惠码必须填写");
               return;
             }
 
-            var rword = /[^\n\r, ，]+/g;// 以换行、空格、中文逗号、英文逗号分割，使用replace进行foreach
+            /**
+             * [if bug]
+             * @param  {[type]} !(coupons instanceof    Array) [description]
+             * @return {[type]}           [description]
+             * @bug 需要首先判定coupons是否是Array，
+             *      如果不是，再使用replace
+             *      如果是，说明已经转换过了，但是还没有保存
+             */
+            if(!(coupons instanceof Array)){
 
-            var couponArray = [];
+              var couponArray = [];
 
-            coupons.replace(rword,function(each){
-              couponArray.push(each);
-            });
+              var rword = /[^\n\r, ，]+/g;// 以换行、空格、中文逗号、英文逗号分割，使用replace进行foreach
 
-            couponData.coupons = couponArray;
+              coupons.replace(rword,function(each){
+                couponArray.push(each);
+              });
 
+              couponData.coupons = couponArray;
 
+            }
+            
             console.log(coupons);
-
-
 
             var ec = (couponData.ec || "").trim();
 
@@ -390,11 +437,12 @@ jfApp.controller('mallCouponCtrl',function($scope,$http,$q,$rootScope,$filter){
                         console.log("修改优惠券"+attr+"属性成功");
                        }else{
                            console.log("修改优惠券"+attr+"属性失败");
+                           throw "修改优惠券"+attr+"属性失败";
                            console.log(upperData.message);
                       }
                    }).catch(function(e){
                        console.log("修改优惠券"+attr+"属性失败");
-                      console.log(e);
+                       console.log(e);
                    })
 
                    promises.push(promise);
@@ -495,65 +543,70 @@ jfApp.controller('mallCouponCtrl',function($scope,$http,$q,$rootScope,$filter){
     };
 
     $scope.eventHandler = eventHandler;
-    $http(params).then(function(result){
-      var upperData = result.data;
-      console.log(result);
-
-      if(upperData.state === "SUCCESS"){
-        var data = upperData.data;
-        // 先过滤出所有商品，在给每个添加href属性，然后按照过期时间，从上倒下排列
-        $scope.coupons = data.filter(function(each){
-                        return each.type == 1;
-                      }).map(function(each){
-                        each.href = "http://z.diaox2.com/view/app/?m=jfitem&gid="+each.gid;
-                        // pic字段是一个
-                        each.pics = JSON.parse(each.pics);
-                        return each;
-                      }).sort(function(e1,e2){
-                        return e1.last_valid_time > e2.last_valid_time ? 1 : (e1.last_valid_time < e2.last_valid_time ? -1 : 0);
-                      });
-       console.log($scope.coupons);
-
-       $scope.coupons.forEach(function(coupon){
-          var gid = coupon.gid;
-          coupon.coupons = [];
-          var params = {
-            url: checkgoods,
-            method: "POST",
-            timeout: 20000,
-            catch: true,
-            headers: headers,
-            // data:"{}"
-            data:JSON.stringify({
-              gid:gid,
-              code:code.value,
-              person:person.value
-            })
-        };
+    if(code.value){
         $http(params).then(function(result){
-          console.log(result);
-          var upperData = result.data;
-          if(upperData.state === "SUCCESS"){
-            var data = upperData.data;
-            var sales = data.sales;
-            sales.forEach(function(sale){
-              coupon.coupons.push(sale.value);
-            })
-          }else{
-            console.log('获取优惠券明细失败。gid' +gid );
-          }
+        var upperData = result.data;
+        console.log(result);
 
-        }).catch(function(e){
-          console.log('获取优惠券明细失败。gid' +gid );
-        })
-       }) 
-      }else{
-         tip("获取所有优惠券失败");
-         console.log(upperData.message);
-      }
-    }).catch(function(e) {
-        console.log('获取所有优惠券失败');
-        console.log(e);
-    })
+        if(upperData.state === "SUCCESS"){
+          var data = upperData.data;
+          // 先过滤出所有商品，在给每个添加href属性，然后按照过期时间，从上倒下排列
+          $scope.coupons = data.filter(function(each){
+                          return each.type == 1;
+                        }).map(function(each){
+                          // each.href = "http://z.diaox2.com/view/app/?m=jfitem&gid="+each.gid;
+                          each.href = "http://c.diaox2.com/view/app/?m=jfitem&gid="+each.gid;
+                          // pic字段是一个
+                          each.pics = JSON.parse(each.pics);
+                          return each;
+                        }).sort(function(e1,e2){
+                          return e1.last_valid_time > e2.last_valid_time ? 1 : (e1.last_valid_time < e2.last_valid_time ? -1 : 0);
+                        });
+         console.log($scope.coupons);
+
+         $scope.coupons.forEach(function(coupon){
+            var gid = coupon.gid;
+            coupon.coupons = [];
+            var params = {
+              url: checkgoods,
+              method: "POST",
+              timeout: 20000,
+              catch: true,
+              headers: headers,
+              // data:"{}"
+              data:JSON.stringify({
+                gid:gid,
+                code:code.value,
+                person:person.value
+              })
+          };
+          $http(params).then(function(result){
+            console.log(result);
+            var upperData = result.data;
+            if(upperData.state === "SUCCESS"){
+              var data = upperData.data;
+              var sales = data.sales;
+              sales.forEach(function(sale){
+                coupon.coupons.push(sale.value);
+              })
+            }else{
+              console.log('获取优惠券明细失败。gid:' +gid );
+            }
+
+          }).catch(function(e){
+            console.log('获取优惠券明细失败。gid:' +gid );
+          })
+         }) 
+        }else{
+           tip("获取所有优惠券失败。gid:" +gid);
+           console.log(upperData.message);
+        }
+      }).catch(function(e) {
+          console.log('获取所有优惠券失败。gid:' +gid);
+          console.log(e);
+      })
+    }else{
+      tip('请输入密码');
+    }
 
 });

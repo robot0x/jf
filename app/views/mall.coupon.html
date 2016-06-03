@@ -1,7 +1,7 @@
 <div class="container" ng-controller="mallCouponCtrl">
     <div class="row">
         <div class="col-md-5 left" style="border-left:none;">
-            <p>共有{{ coupons.length}}个优惠券</p>
+            <p>共有{{ coupons.length || 0 }}个优惠券</p>
             <ul>
                 <li class="gift-item-container" ng-repeat="coupon in coupons">
                    <div class="gift-item clearfix">
@@ -10,23 +10,31 @@
                                <a target="_blank" href="{{coupon.href}}" ng-bind="coupon.desc"></a>
                            </h2>
                            <div class="detail">
-                               <!-- 价格 -->
+                               <!-- GID -->
                                <span>GID：{{coupon.gid}}</span>
                                <br>
-                               <!-- GID -->
-                               <span>价格：{{coupon.price}}</span>
+                               <span>积分：{{coupon.price}}</span>
                                <br>
                                <!-- 来源 -->
                                <span>来源：{{coupon.ec}}</span>
                            </div>
                            <button class="btn btn-info view" ng-click="eventHandler.view(coupon)">查看</button>
+
+                           <form action="http://203.195.181.227/cdn/refresh" method="POST" target="_blank" style="display:inline-block;margin-bottom:20px;">
+                                <input type="hidden" name="refresh" value="{{coupon.href}}">
+                                <button class="btn btn-xs btn-danger">
+                                  <span class="glyphicon glyphicon-refresh"></span>
+                                  刷新CDN
+                                </button>
+                              </form>
+                              
                    </div>
                    <p class="intro" ng-bind="coupon.intro"></p>
                 </li>
             </ul>
         </div>
 
-        <div class="col-md-7 right" style="border-right:none;">
+        <div class="col-md-7 right" style="border-right:none;" scroll-with>
             <div class="btn-area  pull-right">
                 <button class="btn btn-default btn-success btn-sm" role="button" ng-click="eventHandler.save(couponData)">
                     <span class="glyphicon glyphicon-ok"></span>
@@ -179,7 +187,9 @@
                  </tr>
 
                 <tr>
-                   <td>优惠码<span ng-hide="!couponData.coupons || couponData.coupons.length == 0">共{{couponData.coupons.length}}条</span>：</td>
+                   <td>优惠码
+                   <span ng-hide="!couponData.coupons || couponData.coupons.length == 0">共{{ couponData.coupons | couponsFilter }}条</span>：
+                   </td>
                    <td><textarea class="form-control" rows="5" placeholder="使用换行、逗号、空格隔开多个优惠码" ng-model="couponData.coupons"></textarea></td>
                  </tr>
 
