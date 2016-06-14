@@ -1,0 +1,1009 @@
+<!DOCTYPE html> 
+<html> 
+<head> 
+<meta charset="utf-8">
+<title>test</title> 
+<script type="text/javascript" src="http://img.jb51.net/jslib/jquery/jquery.js"></script> 
+<style type="text/css"> 
+body{
+    padding:10px;
+    margin:0;
+} 
+#box{
+    width:200px;
+    height:200px;
+    /*float:left;*/
+    overflow:hidden;
+    margin:0 auto;
+    background:#9C0;
+}
+.box2{ 
+    width:200px;
+    height:300px;
+    overflow:hidden;
+    background:#CCC;
+    position:fixed;
+}
+
+.box3{
+    height: 300px;
+    width:90%;
+    background: red;
+    overflow: auto;
+    /*position: fixed;*/
+}
+.box4{
+    width:100%;
+    /*height: 400px;*/
+    background: green;
+}
+</style> 
+</head> 
+<body> 
+<!-- <div id="box"> 
+    <div class="box2"></div>
+</div>
+ -->
+<div class="box3">
+    <div class="box4">
+    用户积分需要考虑的点
+积分增加的：
+     [x] 用户需要记录状态，以便实现“单次”增加，比如“第一次登陆”，第一次“输入邀请码”，第一次“选择心动好礼”，第一次“消费积分”，第一次“打开签到提醒”，第一次“分享内容”。
+     [x] 新注册用户送分30，不需要注册状态，依照“用户以前不存在”判断。按照需求，这里是微博/微信分开算，用户的uid设计天然满足产品需求。
+     [x] 用户需要记录状态，以便实现“限量”增加，比如“每天一次签到”/“连续N天签到”，“连续N人接受邀请”，“”
+     [x] 一些管理操作引发的，比如精华，比如奖励（爆料/投稿/精品购购买），无限量。
+     [ ] 上线前的初始化：老用户按照注册时间，分三批，给初始分。
+
+积分消耗的：
+     [x] 积分商城正常消耗
+     [x] 管理操作引发，惩罚
+
+状态查询的：
+     [x] 需要提供接口，按照uid/openid查询用户的积分/目标，当前状态——当天签到/连续签到/邀请人数/是否第一次登陆/是否被邀请过/是否设置心动/是否消费过积分/是否打开签到提醒/是否分享过内容
+     [x] 出于管理需求，需要黑名单设置么？一些用户设为不能获取积分
+
+操作记录：
+     [x] 用户的积分变动，需要记录log
+
+- uid(uniqe) —> log(long text)，这种设计不可扩展，导致后续写入/解析，都很慢，不可取。无论是json或者custom format可以追加型的，都不是很方便
+- uid —>  timestamp, log (var char 32)，这种会导致行数超多，很快变成几千万行的大表，要按时间拆分。当月表 -> 季度表 -> 年表，查询时按表当作分页
+- 如果不考虑用户的查询需求，只当做审计，则直接用log实现，线下整理
+
+商城需要考虑的点
+     [x] 整体列表可以查询，单品可以查询，有丰富的状态指示器可以筛选
+     [ ] 操作需要有log，避免撕？ -> 不考虑，管理员接口记录log，用户购买引起的商品表变化很多。记录在用户消费记录即可。
+
+库设计
+
+用户表的扩展
+全新的表，还是扩展以前的用户表？
+
+uid
+
+外键？还是扩展原来user表
+
+token
+
+char(16)
+
+记录用户token，用来在消费时用
+
+expire
+
+tinyint
+
+token有没有被使用过
+
+last_check_in
+
+timestamp
+年月日即可
+
+上次签到时间，用来判断“每天”签到
+
+continuous_check
+
+smallint unsigned
+
+0~65535天连续签到
+
+last_share
+
+年月日
+
+上次分享的时间
+
+share_num_inday
+
+tinyint unsigned
+
+当日分享次数
+
+invite_str
+
+char(16)
+
+邀请码本身字符串
+
+invite_num
+
+smallint unsigned
+
+邀请了几人
+
+blacked
+
+tinyint unsigned
+
+黑名单了
+
+be_invited
+
+tinyint unsigned
+
+是否被邀请，单次记分
+
+ever_set_gift
+
+tinyint unsigned
+
+是否曾设置过心动礼品
+
+first_login
+
+tinyint unsigned
+
+是否首次登陆取 query_state
+
+ever_share
+
+tinyint unsigned
+
+是否曾分享过
+
+ever_consume
+
+tinyint unsigned
+
+是否曾消费过
+
+ever_set_notify
+
+tinyint unsigned
+
+是否曾设置签到提醒
+
+set_notify
+
+tinyint unsigned
+
+当前是否有签到提醒
+
+score
+
+int unsigned
+
+用户积分0~42亿
+
+target_gift
+
+当前目标礼物
+
+limited_cousume
+
+text
+
+记录消费的仅能消费一次的礼品id，JSON array
+
+invite_str用的可逆算法，char(16) 是刚好，因为32bit数只有10个digits
+limited_consume，用消费表来实现
+
+积分异动log表，目前只记录管理员操作
+
+lid
+
+bigint
+
+1844674407370955, logid
+
+uid
+
+int unsigned
+
+timestamp
+
+timstamp(0)
+
+发生时间
+
+action
+
+varchar 16
+
+积分变动原因
+
+result
+
+varchar 32
+
+积分变动文字
+
+person
+
+varchar 16
+
+管理员名字
+
+商品表
+
+gid
+
+int unsigned
+
+自增商品id
+
+status
+
+tinyint unsigned
+
+下架/上架/限量库存/最新/...
+0     /   1 /   2          / 3    /…..
+
+type
+
+tinyint unsigned
+
+实物/优惠券/...
+0     /    1    /….
+
+title
+
+varchar(64)
+
+商品名
+
+cover
+
+varchar(128)
+
+封面图，阿里云够存
+
+thumb
+
+varchar(128)
+
+缩略图，阿里云够存
+
+pics
+
+text
+
+内容图，一般认为是阿里云
+
+intro
+
+text
+
+本品的介绍文字
+
+ec
+
+varchar(32)
+
+电商名称
+
+price
+
+int unsigned
+
+所需积分 0 ~ 42亿
+
+quantity
+
+int unsigned
+
+当前库存 0~42亿
+
+stocknum
+
+int unsigned
+
+上架时的库存0~42亿
+
+sid
+
+int unsigned
+
+sku id
+
+limited
+
+tinyint unsigned
+
+不限次/限次消费 0/ 1~255
+
+desc
+
+text
+
+兑换简介/流程 —> 礼品
+网站介绍，可选 —> 优惠券
+
+last_valid_time
+
+timestamp
+
+有效期
+
+usage
+
+text
+
+优惠码使用说明
+
+target
+
+varchar(256)
+
+优惠码使用方cps链接
+
+last_invitation
+
+int(10) unsigned
+
+上次被人输入邀请码的时刻
+其实是timestamp，精确到秒
+
+last_notifyset
+
+int(10) unsigned
+
+上次设置Notify的时刻，是自己维护的timestamp，精确到秒
+
+注意，desc/return/usage/target，可以整合到一个text里面，用json来存，反正不单独拿出来用。
+
+优惠券 + 消费表
+记录优惠券的具体串，谁拿到了，后续“我的消费记录”需要看这个
+
+gid
+
+int unsigned
+
+商品id，算是外键
+
+value
+
+varchar(128)
+
+优惠券字符串
+
+uid
+
+int unsigned
+
+初始为0，谁拿走了这个优惠券
+
+stamp
+
+timestamp
+
+何时发生的
+
+lid
+
+bigint unsigned
+
+自增id，锁定用
+
+礼品消费记录表
+记录用户实际消费的礼品，在“我的消费记录”里需要查看
+
+gid
+
+int unsigned
+
+商品id
+
+uid
+
+int unsigned
+
+用户id
+
+stamp
+
+timestamp
+
+消费时间
+
+lid
+
+bigint unsigned
+
+自增id，锁定用
+
+上面两个表合并
+
+统计表
+记录用户实际消费的礼品，在“我的消费记录”里需要查看
+
+day
+
+int
+
+统计窗口 "20160612"
+
+gain
+
+int unsigned
+
+积分增量
+
+lose
+
+int unsigned
+
+积分消耗
+
+checkins
+
+int unsigned
+
+签到成功
+
+notify_on
+
+int unsigned
+
+开启提醒的人（总数）
+
+target_num
+
+int unsigned
+
+总共多少人有心动礼物
+
+target_set
+
+int unsigned
+
+每天多少人设置心动礼物
+
+target_change
+
+int unsigned
+
+每天多少人更换心动礼物
+
+registers
+
+int unsigned
+
+总注册人数
+
+purchases
+
+int unsigned
+
+有购买行为的人数
+
+sales
+
+int unsigned
+
+商品卖出总个数
+
+p_exceeds
+
+int unsigned
+
+重复兑换受限人次
+
+invite_sucs
+
+int unsigned
+
+邀请码成功生效次数
+
+inviters
+
+int unsigned
+
+受益邀请人数
+
+invitees
+
+int unsigned
+
+受益被邀请人数
+
+shares
+
+int unsigned
+
+分享+分次数
+
+essence
+
+int unsigned
+
+精华次数
+
+set_notify
+
+int unsigned
+
+打开签到提醒的次数
+
+off_notify
+
+int unsigned
+
+关闭签到提醒的次数
+
+signups
+
+int unsigned
+
+注册次数
+
+跑log后邮件的：
+1、商城pv/uv
+2、商品uv/pv，被设置心动好礼的情况，被购买的情况
+3、自己邀请页的分享，查看
+4、被邀请页的查看，下载点击
+5、每个商品的兑换记录，直接有线上API接口，融合了。
+6、
+7、
+
+接口设计
+     操作枚举：
+
+- 新用户注册/绑定微博id -> 用户登录，新用户？ 给积分
+- 用户签到/分享/输入邀请码/设置目标/消费/设置签到提醒 -> 触发对应操作
+- 老用户在新设备登录 -> 获取用户所有状态，积分/目标/签到提醒
+- 用户查询积分异动？管理需求也会查询
+
+     内部接口
+          [x] 直接变动用户积分：uid + 原因，需要写log
+          [ ] 查询黑名单
+          [x] 操作黑名单，在某个uid上操作，uid + 原因，写log
+          [x] 积分功能维护开关，开时所有操作暂停，数据库无写入?
+          [x] 查看单品销售的情况 + 多少人设置为心动好礼
+          [x] 查看用户的情况，查看用户当前全部情况，消费历史，按时间范围
+          [ ] 反查邀请码？邀请码到uid，无必要；查询邀请码输入情况？分析log
+          [ ] 管理员操作日志查看
+          [ ] 商品单品上货
+          [ ] 商品单品修改
+          [ ] 统计表读取天级数据
+
+     外部接口
+          [x] 用户交互行为 [签到，分享，设置心动好礼，开启签到提醒，输入邀请码] + uid
+          [x] 用户积分消费：商城购买，uid + 商品id + token
+          [x] 根据uid查询用户状态：uid => [签到/分享/邀请/xx 等状态 + 积分/目标/黑名单]
+          [x] 读取积分商城列表
+          [x] 读取单个商品信息
+
+     app jsBridge
+          [x] settarget：数据传递h5 —> app，心动商品设置，giftid/title/价格/图片
+          [x] buy：数据传递h5 —> app，购买
+          [x] gethistory: 得到用户消费历史
+          [x] AppEnv: 得到用户的各种信息，uid/积分/目标，数据传递app —> h5
+
+     log分析
+          [ ] 邀请码的输入情况
+          [ ] 每日总增分，总减分
+          [ ] 每日签到人数
+          [ ] 开启提醒人数 —> log分析任务时，表->表即可，不用分析log
+          [ ] 每日消费人次，消费商品数？
+          [ ] 商城uv/pv
+          [ ] 单品uv/pv
+          [ ] 邀请被分享次数，邀请pv/uv
+          [ ] 心动好礼：日增设置，已设置人数，每个商品设置数
+          [ ]
+
+设计考虑
+
+- 签到：上次签到时间 / 连续签到天数，就可以了。
+- 分享：上次分享日期 （20160505) / 今日签到次数。
+    - 获取当前日期，如果当前日期和记录的不一样，则清空签到次数 = 0，设置日期为当前日期。
+    - 看分享次数是否达到3，没有达到，则加分，次数加1
+- 签到提示：需要有个状态位来记录是否第一次设置。 再增加一个状态标明他设置了开还是关，这个为了用户换手机登陆仍然有签到提示？
+- 邀请：为什么要记录邀请记录？可不可以不记录，因为有奖励，至少要记录邀请个数。
+被邀请人反复输入邀请码是无效的，因为他自己有个“被邀请”的状态判断，只生效一次。
+邀请人不看邀请记录的话，这里没必要记录。让他看么？通过log看积分异动是否够了。
+    - 用户主表里，用text记录json来处理，邀请了谁，什么时间。
+        - 好处：用户增加积分操作的时候，sql语句减少，读用户记录什么都明了了，写入的时候，sql也可以在一条内。
+        - 坏处：有些用户邀请的人很多，json parse有代价，越来越慢。
+    - 另外一张表来记录，邀请了谁，什么时间。
+        - 好处：性能惩罚少，预期100w用户邀请别人，每人成功邀请20人，且输入了码，也才2kw行，ok。
+        - 坏处：统计个数需要读表才能判断，多sql，多流程；修改的时候也需要多表操作。
+- 商城购买：
+- 其他
+
+积分增加，基本逻辑
+
+- 看是否当前API出于停机阶段，停机则返回
+- parse用户的输入参数是否正确
+- Start Transaction
+- 获取用户当前状态，并且锁住这一行
+- 黑名单->拒
+- 根据action来判断
+    - 是签到，判断是会否当天第一次签到？是：加积分。判断是否连续N天签到？是：加积分。生成update用户状态的sql
+    - 是分享。用户第一次分享？加分。判断是否当天前三次分享？是：加积分，修改状态。生成sql，否，返回用户状态。
+    - 是开启/关闭签到提醒，判断是第一次开启？是：加积分，修改状态。生成sql，否，返回用户状态。
+    - 是评论变为精华？是：加积分。
+    - 是设置/变更/取消心动好礼。第一次设置？是：加积分，修改状态。否，直接修改状态。生成sql
+    - 是邀请码被输入？是：判断邀请了多少人，加积分。修改状态。生成sql。不实现这个接口，直接在输入邀请码操作里完成。
+    - 是主动输入邀请码，判断是第一次输入？是：加积分，修改状态。怎么给邀请码拥有者加积分？直接再递归调用本函数不可取。两次star transaction。找到邀请码拥有者，锁定他那一行，根据人数判断加积分，修改状态，生成所有的sql。
+        - 这里，需要锁定自己的行，也需要锁定邀请者的行。邀请者的行可能正在消费，于是被另外的session锁定，但理论上应该很快结束。不会等待很久，即便超时，也就是rollback，然后会重试。
+        - 邀请者会不会可能正在锁定被邀请者呢？有一定的几率，比如两人都从来没有输入过邀请码，都看到了对方的邀请页，都同时回来输入，有可能。这时mysql会自动探测死锁，消灭一个。重试即可
+        - 将来如果有一些别的用户互相转让积分的机制，也会导致互相锁定，概率比较低。而且有回退，暂时不处理。
+    - 是新用户来到。增加用户的表项入口，直接设置积分为30，如果已经存在，则sql本身会报错返回。
+    - 管理员直接修改积分。直接加减。生成sql
+- 用户的操作log？ [可选]
+- 执行生成的sql。
+- commit
+
+积分消费
+
+- 看是否当前API出于停机阶段，停机则返回
+- parse用户的输入参数是否正确
+- Start Transaction
+- 获取用户当前状态，并且锁住这一行（因为要修改积分）
+- 黑名单->拒
+- 扫描商品表，锁住那一行。（因为要修改库存）
+- 判断上架，库存有货，优惠券没有过期，用户积分够。都满足，继续，否则返回失败。
+- 商品获取和判断
+    - 优惠券，扫描一行并锁定（因为要消耗一个优惠码），如果没有，则返回失败
+    - 商品，非限量型，无操作；限量型，如果扫描存在N行记录，则返回失败。限量不一定是限量一个，根据商品库attribute的字段来判定
+- 产生用户扣分sql，商品扣库存sql（无限型忽略），优惠券消耗sql，商品购买记录sql
+- 执行sql，失败则全部rollback
+- 返回必要的商品消费讯息，优惠码/url/其他，来自商品表/优惠券表。
+- commit
+
+加密考虑
+
+- 避免回放？ -> 很多操作server端是有逻辑判定的，无法重复。比如限量的签到/分享
+
+统计需求支持
+
+- 每日签到人数
+
+    - select count(uid) from  where last_check_in > 今早 and last_check_in < 今晚;
+- 开启“每日签到提醒”的人数
+
+    - select count(uid) from where set_notify=1;
+- 每日app内积分的总获得数值、及总消费数值
+
+    - 这个需要看log了。要么就要用消费商品表算消费值，用户分求和 - 昨天 来判断。
+- 积分商城PV/UV
+
+    - 需要用log
+- 邀请好友赢积分H5页面的每日分享次数、PV/UV、邀请码输入次数
+
+    - 内部访问可以用app打日志，外部访问 打log统计。
+- 每日积分商城的兑换记录（成功兑换的操作）
+
+    - select * from coupon_consume where stamp < 今晚 and stamp > 今早;
+    - select * from goods_consume where  stamp < 今晚 and stamp > 今早; stamp < 今晚 and stamp > 今早;
+
+API接口文档：
+
+所有需要在app内与用户产生交互的接口，比如/earn，比如/consume，比如/query_state
+成功：{"message": "", "data": object, "state": "SUCCESS"}
+失败：{"state": "FAIL", "message": "需要告知用户的原因", "data": object}
+所有的data格式：{"msg": "信息，展示给用户看的", "reason": "失败理由，debug用", "data": object}
+
+- 用户获取积分的动作
+
+    - URL，只支持POST方法
+        - /earn
+    - 参数说明：
+        - {"action": "xxxx", "uid": 456, "其他参数": "值"}
+        - 必须要提供的字段是action，uid，指定用户uid和动作
+        - action: "checkin"，签到
+            - 无其他参数
+        - action: "share"，分享
+            - 无其他参数
+        - action: "essence"，回复列为精华
+            - 无其他参数
+        - action: "signup"，新注册/绑定帐号
+            - 无其他参数
+        - action: "settarget", 设置心动好礼
+            - 其他参数："gid": 122，gid是设置的心动好礼的id，正常数值是心动好礼的id，如果是null，则表示取消。
+            - 注意是null值，不是undefined。其他语言调用的时候，需要跟node.js联调，看看null具体是其他语言的什么值
+        - action: "setnotify"， 设置签到提醒状态
+            - 其他参数："state": "on" 或 "state": "off"，指明用户当前修改签到提醒状态是开还是关。
+        - action: "invitation"，输入邀请码
+            - 其他参数："invite_str": "00A0A35D678CE90F", 16字符的一个字符串
+    - 返回值：应该包括用户的动作成败、用户当前的状态
+        - {"msg": msg, "data": {"user": 用户信息, "target_gift": 商品信息}}，但是商品信息不一定有
+        - 失败：{"reason": "xxxxx", "msg": "客户端提示"}
+        - {"uid": yyy, "score": 123, "last_check_in": "2016-05-05 17:00:34", "continuous_check": 2, "last_share": "2016-05-05 22:13:47", "share_num_inday": 2, "invite_str": "00A0A35D678CE90F", "invite_num": 4, "blacked": 0, "be_invited": 0, "ever_set_gift": 1, "ever_share": 1, "ever_consume": 0, "ever_set_notify": 1, "set_notify": 1, "target_gift": 19}
+- 用户消费前的token申请
+
+    - URL，只支持POST方法
+        - /get_token
+    - 参数说明：
+        - {"uid": 123, "hash": "xxxxxx"}
+        - hash生成方法为：hash == md5(auth_id + uid)
+    - 返回值：申请到的token
+        - {"token": "xxxxxxxxxxx"}，一个长度为16的串
+    - hash验证算法
+        - hash == md5(auth_id + uid)
+- 用户消费积分的动作
+
+    - URL，只支持POST方法
+        - /consume
+    - 参数说明：
+        - {"action": "buy", "uid": 123, "hash": "xxxxx", "其他参数": "值"}
+        - 必须要提供的字段是action，uid，指定用户uid和动作
+        - hash需要用到get_token的返回值生成：hash == md5(auth_id + uid + token)
+        - action: "buy"，商城购买
+            - 其他参数："gid": 7, 商品id号
+            - 其他参数："hash" : 一个字符串，是依据用户的uid，申请的消费token，auth，计算得到的一个串。
+    - 返回值：应该包括用户的动作成败、用户当前的状态
+        - 形如{"msg": "购买成功", "data": {"user": user, "goods": goods}}
+        - 失败：失败：{"reason": "xxxxx", "msg": "客户端提示"}
+        - 注意：goods里面的字段，如果是消费优惠券类型的，那么会多一个"value"字段，这是优惠券的具体串
+    - hash验证算法
+        - hash == md5(auth_id + uid + token)
+- 查询用户的状态
+    - URL，只支持POST方法
+        - /query_state
+    - 参数说明：
+        - {"uid": 123, "hash": "xxxxxxx"}，用户id即可和hash值
+        - hash生成方法为：hash == md5(auth_id + uid)
+    - 返回值：用户记录
+        - 注意，如果是首次请求，返回格式为{"user": user, "target_gift":{}, "init":3}，如果是后续求情，则返回{"user": user, "target_gfit": target_gift}
+        - init 可以是 0/1/2/3 ，代表 新注册或3月内/3~6个月/半年~1年/1年+ 的用户。这个时间点是以2016年6月为准。
+        - {"user": {"uid": yyy, "score": 123, "last_check_in": "2016-07-05 17:00:34", "continuous_check": 2, "last_share": "2016-07-05 22:13:47", "share_num_inday": 2, "invite_str": "00A0A35D678CE90F", "invite_num": 4, "blacked": 0, "be_invited": 0, "ever_set_gift": 1, "ever_share": 1, "ever_consume": 0, "ever_set_notify": 1, "set_notify": 1, "target_gift": 19},  "target_gift": {}}
+        - target_gift里面记录了心动好礼的信息
+        - invite_num： 邀请了几人
+        - invite_str： 邀请码字符串，自己的
+        - continuous_check：连续签到天数
+        - share_num_inday：当天share次数
+        - target_gift：心动好礼的id
+        - blacked：是否被黑名单
+        - last_share：上次何时分享
+        - set_notify：当前的签到提醒的开启状态
+        - ever_xxxx：是否曾经xxx过
+        - token && expire: server端用，客户端无需关注
+- 内部API，设置用户状态（管理用）
+
+    - URL，只支持POST方法
+        - /set_state
+    - 参数说明：
+        - {"action": "xxx", "uid": 123, "person": "LYN", "code": "xxxx", "reason": "理由"}
+        - 必须要提供的字段是action，uid，指定用户uid和动作。person是操作者。
+        - code是密码，reason是原因，需要记录
+        - action: "block"，放入黑名单
+        - action: "unblock"，拿出黑名单
+        - action: "manualop"，管理员直接加减分
+            - 其他参数："value": -100 或 "value": 300，value的值是变动的分数，正负代表管理员是加分还是减分
+        - action: ""
+    - 返回值：
+        - 成功或失败，TODO：加入更多动作/详细
+- 获取商城的列表信息
+
+    - URL，只支持POST方法
+        - /mall
+    - 参数说明：
+        - {}，空对象即可，这时选取的是上架，且不过期的。但可能是库存为0的
+        - {all:''}，选取所有的
+    - 返回值：
+        - 返回商品的明细列表 [{商品}, {商品}, ...]
+        - 每一个商品的明细格式如：
+        - {"gid":1, "status": 0, "type": 0, "title": "第一个商品", "cover": "http://content.image.alimmdn.com/jifenmall/1.jpg", "pics": "[{"url":"http://content.image.alimmdn.com/jifenmall/1/00.png", "width": 1024, "height": 768}]", "intro": "介绍1", "price": 200, "quantity": 1000, "sid": null, "limited": 0, "attribute": 1, "desc": "最新商品1",  "return": "购买后返回给用户看的值", "last_valid_time": 0, "usage": "买回家，用", "target": ""}
+- 获取商品的信息
+
+    - URL，只支持POST方法
+        - /goods
+    - 参数说明：
+        - {"gid": 10}，指明商品的gid
+    - 返回值：
+        - 返回商品的明细格式：
+        - {"gid":1, "status": 0, "type": 0, "title": "第一个商品", "cover": "http://content.image.alimmdn.com/jifenmall/1.jpg", "pics": "[{"url":"http://content.image.alimmdn.com/jifenmall/1/00.png", "width": 1024, "height": 768}]", "intro": "介绍1", "price": 200, "quantity": 1000, "sid": null, "limited": 0, "attribute": 1, "desc": "最新商品1",  "return": "购买后返回给用户看的值", "last_valid_time": 0, "usage": "买回家，用", "target": ""}
+- 内部API，添加一个商品（管理用）
+
+    - URL，只支持POST方法
+        - /addone
+    - 参数说明：
+        - 需要提供{"code": "密码"}
+        - 需要一个商品的明细，除了gid不用提供，别的能提供都需要提供
+        - status = 0/1， 0是下架，1是上架
+        - type = 0/1，0是一般商品，1是优惠券
+        - title = 商品名
+        - cover = 阿里云上的图，商品的图
+        - pics = 其他关于商品的图
+        - intro = 商品介绍
+        - price = 所需积分，非负整数
+        - quantity = 库存量，注意，就算虚拟型的商品，也需要有库存，写40亿即可
+        - sid = 关联的sku的id，如果有
+        - limited = 0 / 1，非限量/限量 购买，
+        - attribute = 0~255
+            - 如果是非限量的，那么这个值是 0 / 1 普通商品/最新商品
+            - 如果是限量的，那么这个值是每人限量消费几个
+        - desc = 简介/流程文字 ~64k
+        - usage = 使用说明 ~64k
+        - return = 512字符以内的消费后反馈信息
+        - target = 优惠码使用连接，购物跳转连接等
+        - last_valid_time = "2016-12-31 23:59:59"，如果是优惠券，说明该优惠券的有效期。普通商品该字段无视
+        - coupons = []，数组，如果类型给了type=1，优惠券，则需要顺便提供优惠券的列表。coupons = ["8D-5MF6A-DKLUV8B", "1D-3ZY0J-OOVRQ9Q", …..]
+            - 注意：如果是统一的“优惠码”，那么最好不要用优惠券类型，当作普通商品来售卖，避免库存占用超多空间，也避免重复输入那个相同的“优惠码”，虽然强行这么用也可以，不好。
+    - 返回值：
+        - 成功或失败
+- 获取优惠券在库列表/消费状态
+
+    - URL，只支持POST方法
+        - /checkgoods
+    - 参数说明：
+        - {"gid": 10}，指明商品的gid
+    - 返回值：
+        - 返回该优惠券的在库详细，除了返回优惠券本身的信息之外，还返回优惠券的每一张的消费状态：
+        - [{"gid":1, "value": "8D-5MF6A-DKLUV8B", "stamp": "0000-00-00 00:00:00", "uid": null}, {"gid":1, "value": "1D-3ZY0J-OOVRQ9Q", "stamp": "2016-06-14 15:03:42", "uid": 5761}, …..]
+        - 如果被消费，则看的到那项的stamp，uid不是默认的0和null
+- 修改一个商品的状态
+
+    - URL，只支持POST方法
+        - /modone
+    - 参数说明：
+        - {"code": "密码", "field": "type", "value": "xxxx"}
+        - field的取值范围：type / status / price ….，就是礼品表的字段名
+        - value，对应的field要设置的value
+    - 返回值：
+        - 成功或者失败
+- 切换维护模式
+
+    - URL，只支持POST方法
+        - /togglemaintainence
+    - 参数说明：
+        - 无，传{}即可
+    - 返回值：
+        - 切换后的状态，如果是1/true，表示在维护态，0/false，在线正常服务
+- 获得用户消费历史
+
+    - URL，只支持POST方法
+        - /query_history
+    - 参数说明：
+        - 同query_state
+    - 返回值：
+        - 用户的消费历史，成功{history:[历史], goods:[商品]}
+
+- 内部API，查看商品的销售情况 + 被设置为心动好礼的个数
+
+    - URL，只支持POST方法
+        - /checkgoods
+    - 参数说明：
+        - {"gid": 18, "code": "xxxxx"}
+        - code 是密码
+    - 返回值：
+        - {"count": 343, "sales":[{sale_log}, {sale_log}]}
+        - sale_log的格式为：{"gid": 23, "uid": 497, "stamp": "2016-05-21T17:03:30.000Z", "value": "Ex52UE99PXNDK6","lid": 263}
+        - {"gid": 23, "uid": null, "stamp": "0000-00-00 00:00:00", "value": "ExM63E7NFQ25EW", "lid": 278}
+        - 注意如果是优惠券，那么还没有被卖出的优惠券也会一并返回，比如上面
+        - 注意所有timestamp，格式可能为"0000-00-00 00:00:00"，这个js默认不能解析，需要自己处理
+- 内部API，查看用户信息
+
+    - URL，只支持POST方法
+        - /checkuser
+    - 参数说明：
+        - {"uid": 497}
+        - {"uid": 497, "start": "2014-12-31 23:59:59"}
+        - {"uid": 497, "end": "2017-01-01 00:00:00"}
+        - {"uid": 497, "start": "xxx", "end": "xx"}
+        - start / end表示需要查询该用户这个时间段里面的消费，是闭区间[start, end]
+    - 返回值：
+        - {"user": user, "history": [{sale_log}, {sale_log}]}
+        - sale_log的格式为：{"gid": 23, "uid": 497, "stamp": "2016-05-21T17:03:30.000Z", "value": "Ex52UE99PXNDK6","lid": 263}
+        - user格式，参见user表。但是会多auth_id和auth_info字段可以查看
+        - auth_info: {"platform": "wechat", "weixin": {"nick_name": "riso", "head_pic": "http://wx.qlogo.cn/mmopen/ajNVdqHZLLBHYJQ54QDhQWFf4c47TJfKgB8auxNt62ficnVE39958eKK4ZAAA5pdaR5VibFicA2NsvYEuUjVKko9Q/0"}, "wechat": {"nick_name": "riso", "head_pic": "http://head.image.alimmdn.com/oV0-BjrarcNmK9rEsw-gee1JTQ04/1463715530.jpg"}, "user_defined": {"nick_name": "Riso-\ud83d\udc3e\ud83d\udc3e", "head_pic": "http://head.image.alimmdn.com/42/1462719297.jpg"}}
+        - platform代表他最近用什么平台登录的，value可以当做auth_info的key，来找到头像、昵称等
+- 内部API，添加一个商品
+
+    - URL，只支持POST方法
+        - /addone
+    - 参数说明：
+        - {商品的所有字段, "person": "谁操作的", "resaon": "操作理由", "code": "密码"}
+        - 商品的字段，可以通过API  /goods  的返回值来研究
+    - 返回值：
+        - {"OK~"}
+        - 或者失败，会在http层包裹后变为state == "FAIL"
+- 内部API，修改一个商品
+
+    - URL，只支持POST方法
+        - /modone
+    - 参数说明：
+        - {"gid": 18, "person": "操作者", "reason": "理由", "field": "字段", "value": "值", "code": "密码"}
+        - 比如: field = "title", value = "新的标题"
+        - 比如：field = "thumb", value = "http://www.xxx.cn/1/2/3.jpg"
+        - 比如：field = "status", value = 2，修改为新品
+    - 返回值：
+        - {"OK~"}
+        - 或者失败，会在http层包裹后变为state == "FAIL"
+- 内部API，读取统计
+
+    - URL，只支持POST方法
+        - /showstat
+    - 参数说明：
+        - {"start": "2016-05-17 00:00:00", "end": "2016-05-19 23:59:59", "code": "密码"}
+        - start / end 只要有一个就可以进行下去，是闭区间[start, end]
+    - 返回值：
+        - {统计数值}
+        - 但是当前只精确到天
+- 内部API，审计用户积分历史，之后一天的数据，且精确度为整天
+
+    - URL，只支持POST方法
+        - /audituser
+    - 参数说明：
+        - {"start": "20160530", "end": "20160607", "code": "密码", "uid": 12345}
+        - start / end 只要有一个就可以进行下去，是闭区间[start, end]
+    - 返回值：
+        - [{"uid": 12345, "day": 20160606, "record": "[主要数据]"}, {"uid": 12345, "day": 20160607, "record":"[主要数据]"}]
+        - 注意，"[主要数据]" 是个json串，需要客户端自己parse为obj之后使用
+        - 用户的积分操作历史，形如[{"t":"2016-06-06 13:36:22","v":3,"a":"checkin","s":303},{"org":null,"target":15,"t":"2016-06-06 13:39:11","v":20,"a":"settarget","s":323},{"t":"2016-06-06 13:39:51","v":6,"a":"share","s":329},{"state":1,"t":"2016-06-06 14:07:41","v":20,"a":"setnotify","s":355},{"type":"inviter","invite_str":"00A0A00A319FH69P","t":"2016-06-06 14:25:57","v":25,"a":"invitation","s":380}]
+        - v：积分变动情况，整数，有正有负
+        - a: 用户执行的动作，可以是"checkin" "share" "invitation" "settarget" "setnotify" "…"等
+        - s: 用户操作后的总积分
+        - gid：商品编号，购买时有
+        - 设置心动好礼时：target = 目标商品的gid，org = 之前目标好礼的gid
+        - 其他字段：是根据用户的操作不同而不同。基本不必解释
+        - 但是当前只精确到天
+
+JSBridge
+     增加：“RPAction”, 这个handler
+RP = Reward Points
+
+- {"action": "buy", "gid": 123}，购买一个商品。返回：购买成功与否，成功后需要包含server的返回值
+- {"action": "settarget", "gid": 123}，设置为心动好礼。返回：设置成功与否，成功后包含server的返回值
+- {"action": "history"}，查询用户的消费历史。返回：成功与否，成功之后，包含server的返回值。
+
+     修改："getAppEnv"，老接口，返回：
+     用户当前邀请的人数，用户的邀请码，用户当前积分，用户的目标好礼gid
+
+apache2和php层的问题
+
+- mod_rewrite
+    - #外部页面强行share渲染，商品单品
+        - RewriteRule ^app/jfitem/(\d+?).html /view/app/?m=jfitem&share&gid=$1 [NC,L]
+        - 使用http://c.diaox2.com/view/app/jfitem/12345.html当作商品页面的静态链接基础，内部渲染为?m=jfitem&share&gid=12345，分享出去的页面是静态的
+    - #邀请
+        - RewriteRule ^app/invite/(\d+?).html /view/app/?m=invite&id=$1 [NC,L]
+        - 内外部一样的
+- php层:
+    - 对于单品页面/邀请页面，过期时间可以很长，尤其是邀请页面，基本不变了
+    - 对于商城页面，过期时间可以考虑为1天左右
+    - 单品和商城，可能会需要刷新CDN的接口，分享出去的单品页面，也需要刷新，商城本身不可以分享
+- 记录一些链接，上线换c.diaox2.com
+    - http://z.diaox2.com/view/app/jfitem/1.html         商品单品页
+    - http://z.diaox2.com/view/app/?m=jfitem&gid=1           商品页面，app版
+    - http://z.diaox2.com/view/app/invite/55580.html         邀请页面，分享版
+    - http://z.diaox2.com/view/app/invite/55574.html
+    - http://z.diaox2.com/view/app/?m=jfmall          商城页面，app版
+    - http://z.diaox2.com/view/app/mall.html          商城页面，分享版
+    - http://z.diaox2.com/view/app/tool/self.html#4#00A0A01B615FD73J  个人邀请页，app版
+    - http://z.diaox2.com/view/app/tool/record.html  各人购买页，app版
+    - http://z.diaox2.com/view/app/tool/self.html     个人邀请页
+- 线上的积分规则页面
+    - http://c.diaox2.com/view/app/tool/about_jf.html
+
+==============后记，一些思考
+1、default值的选择
+
+- 对于timestamp，如果选择为"0000-00-00 00:00:00"，那么node.js选出来，这个值是string，自己做转换，十分麻烦，因为正常值是Date()对象。
+    - 将来应该考虑timestamp的默认值是Date(0) 转过去的那个1970?或者1980？具体要看应用方，因为如果某个值显示出来是1980，则需要人判断是错，当然0也是。
+- 对于其他一些数值化的东西，你比如gid。设置成NULL有个问题，就是连表查询的时候，单Query是无法搞定的，因为如果是NULL 那么 a.gid = b.gid是不成立的。
+    - 考虑用特殊的gid代表空。而不是NULL
+
+2、MYSQL的便利
+
+- select * from xxxx where id in (1,2,3,1,1,1,1,1)，会自动去重，不要紧
+
+3、update语句注意
+
+- update xxx set `a`='b', `c`=1, …. where …，column的名字最好``，不然有一些时候奇怪的报错
+- 同理最好其他语句也这么处理。。。不明觉厉</div>
+</div>
+</body> 
+</html> 

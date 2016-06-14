@@ -8,22 +8,21 @@ jfApp.directive('scrollWith', function() {
       var top = scroller.offset().top;
       var left = scroller.offset().left;
       var width = scroller.outerWidth();
-      scroller.height($("html").height() - parseInt(scroller.css("paddingTop")));
       $(window).on('scroll',function(){
-        var scrollTop = $(this).scrollTop();
-        if(scrollTop >= top){
+        if($(this).scrollTop() >= top){
           scroller.css({
             position:"fixed",
             left:left,
             top:0,
             width:width,
-            overflow:"auto"
+            overflow:"auto",
+            paddingBottom:350
           })
         }else{
           scroller.scrollTop(0);
           scroller.css({
-            position:"static",
-            overflow:"hidden"
+            position:"static"
+            ,overflow:"hidden"
           })
         }
       })
@@ -184,7 +183,7 @@ jfApp.controller('mallGiftCtrl',function($scope,$http,$q,$rootScope,$filter){
       function updateView(sales){
 
         if(!sales.length){
-          tip("还没有记录");
+          tip("还没有记录",1000);
           return;
         }
 
