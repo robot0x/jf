@@ -8,6 +8,7 @@ jfApp.controller('userCtrl',function($scope,$rootScope,$http,$q,$filter){
     var prefix = "http://api.diaox2.com:3000/jf/";
     var checkuser = prefix+"checkuser";
     var set_state = prefix+"set_state";
+    var audituser = prefix+"audituser";
     var error = "失败，请重试";
     var dataFetch = {
         users:[]
@@ -86,6 +87,8 @@ jfApp.controller('userCtrl',function($scope,$rootScope,$http,$q,$filter){
             // 所以会导致左侧更给userData.score也会导致listView中的user.score的变化
             
             $scope.userData = JSON.parse(JSON.stringify(user));
+
+
             // 发现黑名单说明有时候会保存上次的值
             document.getElementById('blacked_reason').value = "";
             document.getElementById("score").disabled = true;
@@ -95,6 +98,53 @@ jfApp.controller('userCtrl',function($scope,$rootScope,$http,$q,$filter){
 
             // 供abandon方法调用
             $rootScope.userData = JSON.parse(JSON.stringify(user));
+
+            var uid = $scope.userData.uid;
+            var code = document.getElementById('code').value;
+            var pattern = "yyyyMMdd"
+            var start = dateFormater($scope.datebox.start,pattern);
+            var end = dateFormater($scope.datebox.end,pattern);
+            var _d = "_d";
+            if(typeof start === "object" && _d in start){
+               start = dateFormater(start[_d],pattern);
+            }
+            if(typeof end === "object" && _d in end){
+              end = dateFormater(end[_d],pattern);
+            }
+            $http({
+                url:audituser,
+                method:"POST",
+                timeout:20000,
+                catch:true,
+                headers:headers,
+                data:JSON.stringify({
+                    uid:uid,
+                    start: start, 
+                    end: end,
+                    code:code
+                })
+            }).then(function(result){
+                 var firstData = result.data;
+                 if(firstData.state !== "SUCCESS"){
+                    var message = firstData.message;
+                    var info = "获取用户\""+$scope.userData.auth_info[userData.auth_info.platform].nick_name+"\"失败，请重试。";
+                    if(message){
+                        info = "信息："+message;
+                    }
+                    tip(info);
+                 }else{
+                    firstData.data.map(function(item){
+                        item.record = JSON.parse(item.record);
+                        return item;
+                    })
+                    $scope.userData.scoreHistorys = firstData.data;
+                 }
+            }).catch(function(e){
+                 tip("获取用户\"$scope.userData.nick_name\"失败，请重试");
+                 console.log(e);
+            })
+
+
         },
          abandon:function(userData){
             // alert("放弃");
@@ -167,9 +217,15 @@ jfApp.controller('userCtrl',function($scope,$rootScope,$http,$q,$filter){
                         tip('积分格式填写有误，请填写正整数');
                         return;
                     }
-                    showLoading();
                     // 计算出当前值和原始值的差。负数也算。
                     var value = nScore - score;
+
+                    if(value == 0){
+                        tip("你并没有修改积分");
+                        return;
+                    }
+
+                    showLoading();
                     // return;
                     var promise = $http({
                         url:set_state,
@@ -367,7 +423,6 @@ jfApp.controller('userCtrl',function($scope,$rootScope,$http,$q,$filter){
                 var deffered = $q.defer();
                 var promises = [];
                 showLoading();
-                console.log(start,end);
                 var code =  $('#code').val() || window.sessionStorage.getItem('code');
                 if(!code){
                     hideLoading();

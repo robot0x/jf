@@ -155,7 +155,7 @@
 
 
      <div class="panel panel-default">
-        <div class="panel-heading">历史记录</div>
+        <div class="panel-heading">兑换历史记录</div>
         <div class="panel-body">
           <table class="table table-hover table-bordered">
              <thead>
@@ -175,6 +175,51 @@
           </table>
         </div>
       </div>
+
+
+      <div class="panel panel-default">
+        <div class="panel-heading">积分历史记录</div>
+        <div class="panel-body">
+          <table class="table table-hover table-bordered">
+             <thead>
+               <tr> 
+                 <th>时间</th>
+                 <th>详情</th>
+               </tr>
+             </thead>
+
+             <tbody>
+                <tr ng-repeat="scoreHistory in userData.scoreHistorys">
+                  <td>{{scoreHistory.day}}</td>
+                  <td>
+                  <!-- {{scoreHistory.record}} -->
+                     <table class="table table-hover table-bordered">
+                        <thead>
+                         <tr> 
+                           <th>详细时间</th>
+                           <th>动作</th>
+                           <th>积分变化</th>
+                           <th>当前积分</th>
+                         </tr>
+                       </thead>
+                       <tbody>
+                         <tr ng-repeat="r in scoreHistory.record">
+                           <td>{{r.t}}</td>
+                           <td>{{r.a}}</td>
+                           <td>{{r.v}}</td>
+                           <td>{{r.s}}</td>
+                         </tr>
+                       </tbody>
+                     </table>
+                  </td>
+                </tr>
+             </tbody>
+
+          </table>
+        </div>
+      </div>
+
+
 
     </div>
   </div>

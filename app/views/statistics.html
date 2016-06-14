@@ -58,6 +58,7 @@
             <table class="table table-hover table-bordered statistics-info">
                 <thead>
                     <tr>
+                        <th>时间</th>
                         <th>积分增量</th>
                         <th>积分消耗</th>
                         <th>签到成功</th>
@@ -87,6 +88,7 @@
                 </thead>
                 <tbody>
                     <tr ng-repeat="statistics in statisticsList">
+                        <td>{{statistics.day}}</td>
                         <td>{{statistics.gain}}</td>
                         <td>{{statistics.lose}}</td>
                         <td>{{statistics.checkins}}</td>

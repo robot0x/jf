@@ -225,12 +225,12 @@ jfApp.controller('mallCouponCtrl',function($scope,$http,$q,$rootScope,$filter){
               return;
             }
 
-            if(isNaN(quantity) || quantity <= 0){
+            if(isNaN(quantity) || quantity < 0){
               tip("优惠券库存数量只能填写正整数");
               return;
             }
 
-            if(isNaN(stocknum) || stocknum <= 0){
+            if(isNaN(stocknum) || stocknum < 0){
               tip("库存总量只能填写正整数");
               return;
             }

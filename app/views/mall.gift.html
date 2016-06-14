@@ -20,8 +20,35 @@
                                <br>
                                <!-- 来源 -->
                                <span>来源：{{gift.ec}}</span>
+                               <br>
+                               <!-- 库存 -->
+                               <span>库存：{{gift.quantity}} / {{gift.stocknum}}</span>
                            </div>
                            <button class="btn btn-info view" ng-click="eventHandler.view(gift)">查看</button>
+
+
+                          <button class="btn btn-xs btn-info" ng-click="eventHandler.viewGiftHistory(gift)">
+                             查看兑换记录                        
+                          </button>
+
+                            <table class="table table-bordered table-hover" style="margin-top:20px;" ng-hide="gift.sales == null || gift.sales.length === 0 ">
+                              <thead>
+                                <th>UID</th>
+                                <th>昵称</th>
+                                <th>时间</th>
+                              </thead>
+                              <tbody>
+                               <!--  <tr>
+                                  <td>72801</td><td>1111</td><td>2016-06-13</td>
+                                </tr> -->
+                                <tr ng-repeat="sale in gift.sales">
+                                  <td>{{sale.uid}}</td><td>{{sale.nickname}}</td><td>{{sale.stamp | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+                                </tr>
+                              </tbody>
+                            </table>
+
+
+
                            <form action="http://203.195.181.227/cdn/refresh" method="POST" target="_blank" style="display:inline-block;margin-bottom:20px;">
                                 <input type="hidden" name="refresh" value="{{gift.href}}">
                                 <button class="btn btn-xs btn-danger">
@@ -31,6 +58,8 @@
                               </form>
                    </div>
                    <p class="intro" ng-bind="gift.intro"></p>
+                   
+                   
                 </li>
                 <!-- <li class="gift-item-container">
                    <div class="gift-item clearfix">

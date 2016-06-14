@@ -37,6 +37,8 @@ jfApp.controller('mallGiftCtrl',function($scope,$http,$q,$rootScope,$filter){
     var mall = prefix + "mall";
     var addone = prefix + "addone";
     var modone = prefix + "modone";
+    var checkgoods = prefix + "checkgoods";
+    var checkuser = prefix + "checkuser";
     // var pattern = "YYYY-MM-DD HH:mm:ss";
     var pattern = "yyyy-MM-dd HH:mm:ss"
     var dateFormater = $filter('date');
@@ -104,6 +106,107 @@ jfApp.controller('mallGiftCtrl',function($scope,$http,$q,$rootScope,$filter){
     $scope.giftData = {status:0,last_valid_time:dateFormater(new Date(),pattern)};
 
     var eventHandler = {
+    viewGiftHistory:function(gift){
+
+      if(!gift){
+        tip("无法查看不存在的礼物");
+        return;
+      }
+
+      var gid = gift.gid;
+      var code = $.getP().code.value;
+
+
+      // 首先拿到记录（UID）
+      // 然后根据记录拿到昵称
+      // 然后更新VM
+
+      function getHistoryByGid(gid){
+             var params = {
+                  url:checkgoods,
+                  headers:headers,
+                  method: "POST",
+                  timeout: 20000,
+                  catch: true,
+                  data:JSON.stringify({gid:gid,code:code})
+                  // ,success:function(result){
+                  //   console.log(result);
+                  //   var state = result.state;
+                  //   console.log(deferred);
+                  //   if(state!=="SUCCESS"){
+                  //     deferred.reject(result);
+                  //   }else{
+                  //     deferred.resolve(result);
+                  //   }
+                  // },
+                  // error:function(e){
+                  //   deferred.reject(e);
+                  // }
+                  };
+             return $http(params);
+      }
+
+      function getUserInfo(result){
+        var sales = result.data.data.sales;
+        console.log(sales);
+        var promises = [];
+        var params = {
+             url:checkuser,
+             method: "POST",
+             timeout: 20000,
+             catch: true
+             // ,success:function(result){
+             //   console.log(result);
+             // },
+             // error:function(e){
+             //  console.log(checkuser+"接口失败！");
+             //  console.log(e);
+             // }
+           };
+
+        sales.forEach(function(sale){
+          params.data = JSON.stringify({uid:sale.uid,code:code})
+          promises.push($http(params).then(function(result){
+            console.log(result);
+            var user = result.data.data.user;
+            console.log(user);
+            user.auth_info = JSON.parse(user.auth_info);
+            sale.nickname = user.auth_info[user.auth_info.platform].nick_name
+          }));
+        })
+
+        return $q.all(promises).then(function(){
+          return sales;
+        })
+
+      }
+
+      function updateView(sales){
+
+        if(!sales.length){
+          tip("还没有记录");
+          return;
+        }
+
+        var gifts = $scope.gifts;
+        for(var i = 0,l = gifts.length;i<l;i++){
+          var cGift = gifts[i];
+          if(cGift.gid == gift.gid){
+            cGift.sales = sales;
+            return;
+          }
+        }
+
+      }
+
+      getHistoryByGid(gid,code)
+         .then(getUserInfo)
+         .then(updateView)
+         .catch(function(e){
+          console.log(e);
+         })
+      
+    },
     upload:function(event,id,isMulti){
 
          console.log(event);
@@ -208,10 +311,11 @@ jfApp.controller('mallGiftCtrl',function($scope,$http,$q,$rootScope,$filter){
               return;
             }
 
-            if(!desc){
-              tip("注意事项必须填写");
-              return;
-            }
+            // if(!desc){
+            //   tip("注意事项必须填写");
+            //   return;
+            // }
+            
             if(!reason){
               tip("修改原因必须填写");
               return;
@@ -222,12 +326,12 @@ jfApp.controller('mallGiftCtrl',function($scope,$http,$q,$rootScope,$filter){
               return;
             }
 
-            if(isNaN(quantity) || quantity <= 0){
+            if(isNaN(quantity) || quantity < 0){
               tip("礼品库存数量只能填写正整数");
               return;
             }
 
-            if(isNaN(stocknum) || stocknum <= 0){
+            if(isNaN(stocknum) || stocknum < 0){
               tip("库存总量只能填写正整数");
               return;
             }
@@ -238,18 +342,21 @@ jfApp.controller('mallGiftCtrl',function($scope,$http,$q,$rootScope,$filter){
             }
 
             // 图片验证
-            
             var pics = giftData.pics;
 
             if(!pics){
               pics = [];
             }else{
-              pics.map(function(pic){
-                delete pic["$$hashKey"];
-                delete pic["object"];
-                return pic;
-              })
-            }
+              try{
+                pics.map(function(pic){
+                  delete pic["$$hashKey"];
+                  delete pic["object"];
+                  return pic;
+                })
+              }catch(e){
+                console.log(e);
+              }
+           }
 
             var thumb = giftData.thumb;
 
@@ -349,12 +456,16 @@ jfApp.controller('mallGiftCtrl',function($scope,$http,$q,$rootScope,$filter){
                      if( temPics.length !== pics.length ){
                         modifyAttrCollections[attr] = pics;
                      }else{
-                        // 保证tmpPics下所有的pic都在pics中存在
-                        temPics.every(function(tmpPic){
-                          return pics.some(function(pic){
-                             return pic.url === tmpPic.url;                            
+                        try{
+                            // 保证tmpPics下所有的pic都在pics中存在
+                          temPics.every(function(tmpPic){
+                            return pics.some(function(pic){
+                               return pic.url === tmpPic.url;                            
+                            })
                           })
-                        })
+                        }catch(e){
+                          console.log(e);
+                        }
                      }
                    break;
 
@@ -479,6 +590,7 @@ jfApp.controller('mallGiftCtrl',function($scope,$http,$q,$rootScope,$filter){
                  console.log(result);
                  if(upperData.state === "SUCCESS"){
                     var data = upperData.data;
+                    console.log(data);
                     hideLoading("新增商品成功");
                     $scope.gifts.unshift(giftData);
                  }else{
