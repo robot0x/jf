@@ -2,10 +2,32 @@
 
     <div class="row">
         <div class="col-md-5 left" style="border-left:none;">
-            <p>共有{{ gifts.length || 0 }}个商品</p>
+
+          <div class="filter">
+              <input type="text" ng-model="status" hidden>
+              <label class="radio-inline">
+                <input type="radio" ng-model="status" value="1"> 上架
+              </label>
+              <label class="radio-inline">
+                <input type="radio" ng-model="status" value="0"> 下架
+              </label>
+              <label class="radio-inline">
+                <input type="radio" ng-model="status" value="2"> 限量
+              </label>
+              <label class="radio-inline">
+                <input type="radio" ng-model="status" value="3"> 最新
+              </label>
+              <label class="radio-inline">
+                <input type="radio" ng-model="status" value=""> 全部
+              </label>
+            </div>
+
+            
+            <p style="margin-top:20px;">共有{{ filtered.length || 0 }}个商品</p>
             <ul class="gifts">
                 <!-- <li ng-repeat="gift in gifts"></li> -->
-                <li class="gift-item-container" ng-repeat="gift in gifts">
+                <!-- <li class="gift-item-container" ng-repeat="gift in gifts | filter:{'status':status}"> -->
+                <li class="gift-item-container" ng-repeat="gift in filtered = (gifts | filter:{'status':status})">
                    <div class="gift-item clearfix">
                            <img ng-src="{{gift.cover}}" width="100" height="100">
                            <h2>
