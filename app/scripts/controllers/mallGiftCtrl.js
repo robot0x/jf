@@ -4,10 +4,13 @@ jfApp.directive('scrollWith', function() {
   return {
     restrict: 'A',
     link: function(scope, elem) {
+      
       var scroller = $(elem);
       var top = scroller.offset().top;
       var left = scroller.offset().left;
       var width = scroller.outerWidth();
+      $(".left").css("min-height",scroller.height() + 50);
+      
       $(window).on('scroll',function(){
         if($(this).scrollTop() >= top){
           scroller.css({
@@ -19,7 +22,6 @@ jfApp.directive('scrollWith', function() {
             paddingBottom:350
           })
         }else{
-          scroller.scrollTop(0);
           scroller.css({
             position:"static"
             ,overflow:"hidden"

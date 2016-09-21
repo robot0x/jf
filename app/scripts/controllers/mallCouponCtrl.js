@@ -8,6 +8,7 @@ jfApp.directive('scrollWith', function() {
       var top = scroller.offset().top;
       var left = scroller.offset().left;
       var width = scroller.outerWidth();
+      $(".left").css("min-height",scroller.height() + 50);
       $(window).on('scroll',function(){
         if($(this).scrollTop() >= top){
           scroller.css({
@@ -18,8 +19,8 @@ jfApp.directive('scrollWith', function() {
             overflow:"auto",
             paddingBottom:350
           })
-        }else{
-          scroller.scrollTop(0);
+        }
+        else{
           scroller.css({
             position:"static"
             ,overflow:"hidden"
@@ -422,6 +423,7 @@ jfApp.controller('mallCouponCtrl',function($scope,$http,$q,$rootScope,$filter){
                  };
               
                  var promises = [];
+
                  for(var attr in modifyAttrCollections){
 
                    data.field = attr;
@@ -465,8 +467,8 @@ jfApp.controller('mallCouponCtrl',function($scope,$http,$q,$rootScope,$filter){
                          if(index !== -1){
                             $scope.coupons[index] = $scope.couponData;
                          }
-                    },function(){
-                      hideLoading('修改失败');
+                    },function(e){
+                      hideLoading('修改失败，信息：'+e.message);
                     });
                }
             }else{
@@ -482,12 +484,12 @@ jfApp.controller('mallCouponCtrl',function($scope,$http,$q,$rootScope,$filter){
                     hideLoading("新增优惠券成功");
                     $scope.coupons.unshift(couponData);
                  }else{
-                     hideLoading("新增优惠券失败");
+                     hideLoading("新增优惠券失败，信息："+upperData.message);
                      console.log(upperData.message);
                 }
 
                }).catch(function(e){
-                  hideLoading("新增优惠券失败");
+                  hideLoading("新增优惠券失败，信息："+e.message);
                   console.log('新增优惠券失败');
                   console.log(e);
                })
