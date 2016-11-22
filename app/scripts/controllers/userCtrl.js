@@ -3,7 +3,7 @@
 var jfApp = angular.module('jfApp');
 
 jfApp.controller('userCtrl',function($scope,$rootScope,$http,$q,$filter){
-
+    // CODE Sohappy@1902
     var headers = {"Content-Type":"application/json"};
     var prefix = "http://api.diaox2.com:3000/jf/";
     var checkuser = prefix+"checkuser";
