@@ -281,6 +281,7 @@ jfApp.controller('mallGiftCtrl',function($scope,$http,$q,$rootScope,$filter){
             var last_valid_time = giftData.last_valid_time;
             if(typeof last_valid_time === "object"){
               last_valid_time = last_valid_time.format("YYYY-MM-DD HH:mm:ss");
+              giftData.last_valid_time = last_valid_time
             }
             // 礼品描述
             var intro = (giftData.intro || "").trim();
@@ -295,7 +296,7 @@ jfApp.controller('mallGiftCtrl',function($scope,$http,$q,$rootScope,$filter){
             // 修改原因
             var reason = (giftData.reason || "").trim();
 
-            var ec = giftData.ec || "调调";
+            var ec = giftData.ec || "有调";
 
             if(!title || title.length > 20){
               tip("礼物名称/标题必须填写，且在20字以内");
@@ -520,8 +521,7 @@ jfApp.controller('mallGiftCtrl',function($scope,$http,$q,$rootScope,$filter){
 
                if($.isEmptyObject(modifyAttrCollections)){
 
-                 tip("你没有改啥啊");
-                 return;
+                 return tip("你没有改啥啊");
 
                }else{
 
@@ -535,6 +535,7 @@ jfApp.controller('mallGiftCtrl',function($scope,$http,$q,$rootScope,$filter){
                  };
               
                  var promises = [];
+
                  for(var attr in modifyAttrCollections){
 
                    data.field = attr;
@@ -561,8 +562,10 @@ jfApp.controller('mallGiftCtrl',function($scope,$http,$q,$rootScope,$filter){
 
                  }
                     // 保证所有都保存成功。移除loading
-                    $q.all(promises).then(function(){
+                    $q.all(promises).then(function(data){
                          hideLoading('修改成功');
+                         console.log('修改成功：');
+                         console.log(data);
                           var gifts = $scope.gifts;
                           var i = 0;
                           var l = gifts.length;
@@ -577,14 +580,15 @@ jfApp.controller('mallGiftCtrl',function($scope,$http,$q,$rootScope,$filter){
                          if(index !== -1){
                             $scope.gifts[index] = $scope.giftData;
                          }
-                    },function(){
+                    },function(e){
                       hideLoading('修改失败');
+                      console.log('修改失败：');
+                      console.log(e)
                     });
                }
             }else{
                params.data = JSON.stringify(giftData);
                params.url = addone;
-               // params.data = JSON.stringify(giftData);
                showLoading();
                $http(params).then(function(result){
                  var upperData = result.data;
@@ -595,12 +599,12 @@ jfApp.controller('mallGiftCtrl',function($scope,$http,$q,$rootScope,$filter){
                     hideLoading("新增商品成功");
                     $scope.gifts.unshift(giftData);
                  }else{
-                     hideLoading("新增商品失败");
+                     hideLoading("新增商品失败，错误信息：" + upperData.message);
                      console.log(upperData.message);
                 }
 
                }).catch(function(e){
-                  hideLoading("新增商品失败");
+                  hideLoading("新增商品失败，错误信息：" + e.message);
                   console.log('新增商品失败');
                   console.log(e);
                })
@@ -631,7 +635,7 @@ jfApp.controller('mallGiftCtrl',function($scope,$http,$q,$rootScope,$filter){
                         return each.type == 0;
                       }).map(function(each){
                         // each.href = "http://z.diaox2.com/view/app/?m=jfitem&gid="+each.gid;
-                        each.href = "http://c.diaox2.com/view/app/?m=jfitem&gid="+each.gid;
+                        each.href = "//c.diaox2.com/view/app/?m=jfitem&gid="+each.gid;
                         // pic字段是一个
                         each.pics = JSON.parse(each.pics);
                         return each;
