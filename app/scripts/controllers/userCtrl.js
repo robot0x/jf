@@ -5,7 +5,7 @@ var jfApp = angular.module('jfApp');
 jfApp.controller('userCtrl',function($scope,$rootScope,$http,$q,$filter){
     // CODE Sohappy@1902
     var headers = {"Content-Type":"application/json"};
-    var prefix = "http://api.diaox2.com:3000/jf/";
+    var prefix = "//203.195.194.216:3000/jf/";
     var checkuser = prefix+"checkuser";
     var set_state = prefix+"set_state";
     var audituser = prefix+"audituser";
@@ -35,7 +35,7 @@ jfApp.controller('userCtrl',function($scope,$rootScope,$http,$q,$filter){
          // var end = datebox.end.format(pattern);
         $scope.eventHandler.search(start,end);
     }
-        
+
 
 
 
@@ -85,7 +85,7 @@ jfApp.controller('userCtrl',function($scope,$rootScope,$http,$q,$filter){
             }
             // 深拷贝一个user对象，不然listView中的user和操作区中的userData指向的是同一个对象
             // 所以会导致左侧更给userData.score也会导致listView中的user.score的变化
-            
+
             $scope.userData = JSON.parse(JSON.stringify(user));
 
 
@@ -119,7 +119,7 @@ jfApp.controller('userCtrl',function($scope,$rootScope,$http,$q,$filter){
                 headers:headers,
                 data:JSON.stringify({
                     uid:uid,
-                    start: start, 
+                    start: start,
                     end: end,
                     code:code
                 })

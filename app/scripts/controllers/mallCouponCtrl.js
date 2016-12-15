@@ -33,7 +33,7 @@ jfApp.directive('scrollWith', function() {
 
 jfApp.controller('mallCouponCtrl',function($scope,$http,$q,$rootScope,$filter){
     var headers      = {"Content-Type": "application/json"};
-    var prefix       = "http://api.diaox2.com:3000/jf/";
+    var prefix       = "//203.195.194.216:3000/jf/";
     var mall         = prefix + "mall";
     var addone       = prefix + "addone";
     var modone       = prefix + "modone";
@@ -187,7 +187,7 @@ jfApp.controller('mallCouponCtrl',function($scope,$http,$q,$rootScope,$filter){
               couponData.coupons = couponArray;
 
             }
-            
+
             console.log(coupons);
 
             var ec = (couponData.ec || "").trim();
@@ -273,7 +273,7 @@ jfApp.controller('mallCouponCtrl',function($scope,$http,$q,$rootScope,$filter){
             var gid = couponData.gid;
 
             couponData.person = person.value;
-            
+
             couponData.code = code.value;
 
             // 如果是新增就需要赋值
@@ -352,7 +352,7 @@ jfApp.controller('mallCouponCtrl',function($scope,$http,$q,$rootScope,$filter){
                         // 保证tmpPics下所有的pic都在pics中存在
                         temPics.every(function(tmpPic){
                           return pics.some(function(pic){
-                             return pic.url === tmpPic.url;                            
+                             return pic.url === tmpPic.url;
                           })
                         })
                      }
@@ -421,7 +421,7 @@ jfApp.controller('mallCouponCtrl',function($scope,$http,$q,$rootScope,$filter){
                       person:person.value,
                       reason:reason
                  };
-              
+
                  var promises = [];
 
                  for(var attr in modifyAttrCollections){
@@ -494,7 +494,7 @@ jfApp.controller('mallCouponCtrl',function($scope,$http,$q,$rootScope,$filter){
                   console.log(e);
                })
             }
-        
+
         },
         upload:function(event,id,isMulti){
 
@@ -506,11 +506,11 @@ jfApp.controller('mallCouponCtrl',function($scope,$http,$q,$rootScope,$filter){
           if(file && file.trim()){
             // 开启遮罩
              showLoading();
-             /* 
+             /*
               把直接写在controller下的promise写在“上传”按钮的回调里，
               这样每次点击按钮，都会创建一个新的promise对象。如果不这样做的话，
               在controller执行时，promise只会new一次，然后上传成功之后，
-              只能resolve一次 
+              只能resolve一次
              */
              window.angular_defer = $q.defer();
              angular_defer.promise
@@ -527,13 +527,13 @@ jfApp.controller('mallCouponCtrl',function($scope,$http,$q,$rootScope,$filter){
             event.preventDefault();
           }
           // showLoading();
-        
+
         },
         view:function(coupon){
            $scope.couponData = JSON.parse(JSON.stringify(coupon));
            $rootScope.rootCouponData = JSON.parse(JSON.stringify(coupon));
         },
-        
+
         abandon:function(){
              // 清空图片
             $("table tr td img").attr("src",null);
@@ -598,7 +598,7 @@ jfApp.controller('mallCouponCtrl',function($scope,$http,$q,$rootScope,$filter){
           }).catch(function(e){
             console.log('获取优惠券明细失败。gid:' +gid );
           })
-         }) 
+         })
         }else{
            tip("获取所有优惠券失败。gid:" +gid);
            console.log(upperData.message);

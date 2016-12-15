@@ -34,7 +34,7 @@ jfApp.directive('scrollWith', function() {
 
 jfApp.controller('mallGiftCtrl',function($scope,$http,$q,$rootScope,$filter){
     var headers = {"Content-Type": "application/json"};
-    var prefix = "http://api.diaox2.com:3000/jf/";
+    var prefix = "//203.195.194.216:3000/jf/";
     var mall = prefix + "mall";
     var addone = prefix + "addone";
     var modone = prefix + "modone";
