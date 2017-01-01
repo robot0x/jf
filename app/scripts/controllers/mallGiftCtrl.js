@@ -4,13 +4,13 @@ jfApp.directive('scrollWith', function() {
   return {
     restrict: 'A',
     link: function(scope, elem) {
-      
+
       var scroller = $(elem);
       var top = scroller.offset().top;
       var left = scroller.offset().left;
       var width = scroller.outerWidth();
       $(".left").css("min-height",scroller.height() + 50);
-      
+
       $(window).on('scroll',function(){
         if($(this).scrollTop() >= top){
           scroller.css({
@@ -206,7 +206,7 @@ jfApp.controller('mallGiftCtrl',function($scope,$http,$q,$rootScope,$filter){
          .catch(function(e){
           console.log(e);
          })
-      
+
     },
     upload:function(event,id,isMulti){
 
@@ -222,11 +222,11 @@ jfApp.controller('mallGiftCtrl',function($scope,$http,$q,$rootScope,$filter){
           if(file && file.trim()){
             // 开启遮罩
              showLoading();
-             /* 
+             /*
               把直接写在controller下的promise写在“上传”按钮的回调里，
               这样每次点击按钮，都会创建一个新的promise对象。如果不这样做的话，
               在controller执行时，promise只会new一次，然后上传成功之后，
-              只能resolve一次 
+              只能resolve一次
              */
              window.angular_defer = $q.defer();
              angular_defer.promise
@@ -317,7 +317,7 @@ jfApp.controller('mallGiftCtrl',function($scope,$http,$q,$rootScope,$filter){
             //   tip("注意事项必须填写");
             //   return;
             // }
-            
+
             if(!reason){
               tip("修改原因必须填写");
               return;
@@ -380,7 +380,7 @@ jfApp.controller('mallGiftCtrl',function($scope,$http,$q,$rootScope,$filter){
             var gid = giftData.gid;
 
             giftData.person = person.value;
-            
+
             giftData.code = code.value;
 
             // 如果是新增就需要赋值
@@ -462,7 +462,7 @@ jfApp.controller('mallGiftCtrl',function($scope,$http,$q,$rootScope,$filter){
                             // 保证tmpPics下所有的pic都在pics中存在
                           temPics.every(function(tmpPic){
                             return pics.some(function(pic){
-                               return pic.url === tmpPic.url;                            
+                               return pic.url === tmpPic.url;
                             })
                           })
                         }catch(e){
@@ -533,7 +533,7 @@ jfApp.controller('mallGiftCtrl',function($scope,$http,$q,$rootScope,$filter){
                       person:person.value,
                       reason:reason
                  };
-              
+
                  var promises = [];
 
                  for(var attr in modifyAttrCollections){
@@ -629,13 +629,14 @@ jfApp.controller('mallGiftCtrl',function($scope,$http,$q,$rootScope,$filter){
 
       if(upperData.state === "SUCCESS"){
         var data = upperData.data;
-        
+
         // 先过滤出所有商品，在给每个添加href属性，然后按照过期时间，从上倒下排列
         $scope.gifts = data.filter(function(each){
                         return each.type == 0;
                       }).map(function(each){
                         // each.href = "http://z.diaox2.com/view/app/?m=jfitem&gid="+each.gid;
-                        each.href = "//c.diaox2.com/view/app/?m=jfitem&gid="+each.gid;
+                        each.href= "http://c.diaox2.com/view/app/?m=jfitem&gid=" + each.gid;
+                        each.https_href = "https://c.diaox2.com/view/app/?m=jfitem&gid=" + each.gid;
                         // pic字段是一个
                         each.pics = JSON.parse(each.pics);
                         return each;
@@ -654,5 +655,5 @@ jfApp.controller('mallGiftCtrl',function($scope,$http,$q,$rootScope,$filter){
     }else{
       tip('请输入密码');
     }
-    
+
 });

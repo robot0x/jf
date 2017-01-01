@@ -557,7 +557,8 @@ jfApp.controller('mallCouponCtrl',function($scope,$http,$q,$rootScope,$filter){
                           return each.type == 1;
                         }).map(function(each){
                           // each.href = "http://z.diaox2.com/view/app/?m=jfitem&gid="+each.gid;
-                          each.href = "http://c.diaox2.com/view/app/?m=jfitem&gid="+each.gid;
+                          each.href = "http://c.diaox2.com/view/app/?m=jfitem&gid=" + each.gid;
+                          each.https_href = "https://c.diaox2.com/view/app/?m=jfitem&gid=" + each.gid;
                           // pic字段是一个
                           each.pics = JSON.parse(each.pics);
                           return each;

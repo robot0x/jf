@@ -22,7 +22,7 @@
               </label>
             </div>
 
-            
+
             <p style="margin-top:20px;">共有{{ filtered.length || 0 }}个商品</p>
             <ul class="gifts">
                 <!-- <li ng-repeat="gift in gifts"></li> -->
@@ -53,7 +53,7 @@
 
 
                           <button class="btn btn-xs btn-info" ng-click="eventHandler.viewGiftHistory(gift)">
-                             查看兑换记录                        
+                             查看兑换记录
                           </button>
 
                             <table class="table table-bordered table-hover" style="margin-top:20px;" ng-hide="gift.sales == null || gift.sales.length === 0 ">
@@ -76,6 +76,7 @@
 
                            <form action="http://203.195.181.227/cdn/refresh" method="POST" target="_blank" style="display:inline-block;margin-bottom:20px;">
                                 <input type="hidden" name="refresh" value="{{gift.href}}">
+                                <input type="hidden" name="refresh" value="{{gift.https_href}}">
                                 <button class="btn btn-xs btn-danger">
                                   <span class="glyphicon glyphicon-refresh"></span>
                                   刷新CDN
@@ -83,8 +84,8 @@
                               </form>
                    </div>
                    <p class="intro" ng-bind="gift.intro"></p>
-                   
-                   
+
+
                 </li>
                 <!-- <li class="gift-item-container">
                    <div class="gift-item clearfix">
@@ -109,7 +110,7 @@
         </div>
 
         <div class="col-md-7 right" style="border-right:none;" scroll-with>
-            
+
             <div class="btn-area  pull-right">
                 <button class="btn btn-default btn-success btn-sm" role="button" ng-click="eventHandler.save(giftData)">
                     <span class="glyphicon glyphicon-ok"></span>
@@ -138,7 +139,7 @@
                      <label class="radio-inline">
                       <input type="radio" name="upAndDown" ng-model="giftData.status" id="up" value="1"> 上架
                     </label>
-                    
+
                     <label class="radio-inline">
                       <input type="radio" name="upAndDown" ng-model="giftData.status" id="limit" value="2"> 限量
                     </label>
@@ -197,7 +198,7 @@
                     </form>
                    </td>
                  </tr>
-                 
+
                   <tr style="background-color: #f5f5f5;">
                    <td>cover图：
                    </td>
@@ -232,12 +233,12 @@
                    <td>库存总量：</td>
                    <td><input type="text" ng-model="giftData.stocknum"></td>
                  </tr>
-                
+
                   <tr>
                    <td>当前库存数量：</td>
                    <td><input type="text" ng-model="giftData.quantity"></td>
                  </tr>
-                
+
                  <tr>
                    <td>有效期选择：</td>
                    <td>
@@ -267,7 +268,7 @@
                    <td>人均可兑换数量：</td>
                    <td><input type="text" ng-model="giftData.limited"></td>
                  </tr>
-                
+
                 <tr>
                    <td>兑换流程：</td>
                    <td><textarea class="form-control" rows="5" placeholder="N字以内" ng-model="giftData.usage"></textarea></td>
