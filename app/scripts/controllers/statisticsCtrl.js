@@ -5,7 +5,7 @@ var jfApp = angular.module('jfApp');
 jfApp.controller('statisticsCtrl', function($scope, $http,$filter) {
     // showstat
     var headers = {"Content-Type": "application/json"};
-    var prefix = "//203.195.194.216:3000/jf/";
+    var prefix = "//bj2.a.dx2rd.com:3000/jf/";
     var showstat = prefix + "showstat";
     var dateFormater = $filter('date');
     var pattern = "yyyyMMdd";
