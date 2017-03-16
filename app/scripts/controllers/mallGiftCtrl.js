@@ -298,8 +298,8 @@ jfApp.controller('mallGiftCtrl',function($scope,$http,$q,$rootScope,$filter){
 
             var ec = giftData.ec || "有调";
 
-            if(!title || title.length > 20){
-              tip("礼物名称/标题必须填写，且在20字以内");
+            if(!title || title.length > 30){
+              tip("礼物名称/标题必须填写，且在30字以内");
               return;
             }
 
