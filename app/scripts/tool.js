@@ -7,7 +7,7 @@
     if(person){
       var personInput = document.getElementById('person');
       personInput.value = person;
-      personInput.disabled = true;
+    //   personInput.disabled = true;
     }
 
     var localStorage = window.sessionStorage;

@@ -183,7 +183,7 @@ jfApp.controller('userCtrl',function($scope,$rootScope,$http,$q,$filter){
            }else{
               // 存入本地缓存
               window.localStorage.setItem('person',person.value);
-              person.disabled = true;
+            //   person.disabled = true;
            }
 
            if(!code.value){
@@ -193,7 +193,7 @@ jfApp.controller('userCtrl',function($scope,$rootScope,$http,$q,$filter){
            }else{
               // 存入会话缓存
               window.sessionStorage.setItem('code',code.value);
-              code.disabled = true;
+            //   code.disabled = true;
            }
 
 
@@ -249,6 +249,10 @@ jfApp.controller('userCtrl',function($scope,$rootScope,$http,$q,$filter){
                         })
                     }).then(function(result){
                         console.log(result);
+                        var state = result.state
+                        if(state !== 'SUCCESS') {
+                          throw new Error(result.message)
+                        }
                     }).catch(function(e){
                         console.log('修改积分失败',e.toString());
                     })
@@ -400,7 +404,9 @@ jfApp.controller('userCtrl',function($scope,$rootScope,$http,$q,$filter){
                  flag = true;
             },function(){
                 hideLoading("保存"+error);
-            });
+            }).catch(function(e){
+              console.log(e)
+            })
 
            $rootScope.modifyButNotSave = false;
         },
